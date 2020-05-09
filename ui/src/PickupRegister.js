@@ -229,7 +229,7 @@ export default class PickupRegister extends React.Component {
                         />
                     </label>
                     <br />
-                    <p hidden={this.state.selectedDate === ""}>You can have a maximum of {this.getMaxCrates()} box(es) picked up on this date.</p>
+                    <p hidden={this.state.selectedDate === ""}>You can have a maximum of {this.getMaxCrates()} box{this.getMaxCrates() > 1 ? "es" : ""} picked up on this date.</p>
                     <label hidden={this.state.disabled}>
                         Number of 12 bottle wine boxes:
                         <input
