@@ -25,8 +25,6 @@ export default class Login extends React.Component {
   handleLoginSubmit(event) {
 
     var myHeaders = new Headers();
-    myHeaders.append("Access-Control-Allow-Origin", "http://localhost:5000");
-    myHeaders.append('Access-Control-Allow-Headers', 'Content-Type');
     myHeaders.append("Content-Type", "application/json");
 
     var loginData = JSON.stringify({
@@ -39,15 +37,13 @@ export default class Login extends React.Component {
       headers: myHeaders,
       body: loginData,
       redirect: 'follow',
-      mode: 'cors',
     };
 
-    fetch("http://localhost:5000/api/auth/login", requestOptions)
+    fetch("/api/auth/login", requestOptions)
       .then(response => response.json())
       .then(result => console.log(result))
       .catch(error => console.log('error', error));
 
-    // alert('A name was submitted: ' + this.state.email + " " + this.state.password);
     event.preventDefault();
   }
 

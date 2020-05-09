@@ -31,6 +31,7 @@ export default class PickupRegister extends React.Component {
             "beerBottles": 0,
             "selectedDate": "",
             "disabled": true,
+            "promptSearch": false,
             "isIn": 2,
         }
         this.handleInputChange = this.handleInputChange.bind(this)
@@ -52,12 +53,14 @@ export default class PickupRegister extends React.Component {
     }
 
     addressSelected(result) {
+        this.setState({ promptSearch: false })
         const address = result.raw.address.house_number + " " + result.raw.address.road + ", " + result.raw.address.city + ", " + result.raw.address.state
         const latLong = [parseFloat(result.raw.lat), parseFloat(result.raw.lon)]
         this.setState({ address: address, address_latLong: latLong })
         const isIn = PointIn(this.state.geo_region.coordinates[0], [latLong[1], latLong[0]])//the geoJSON is stored as lonLat, so reverse latLong order (non-destructive)
         if (isIn > 0) {
             this.setState({ disabled: true })
+            this._geoSuggest.clear()
         } else {
             this.setState({ disabled: false })
         }
@@ -130,14 +133,14 @@ export default class PickupRegister extends React.Component {
     }
 
     onSubmit(event) {
-        if (this.validateInput() === true) {
+        if (this.state.disabled === true) {
+            this.setState({ promptSearch: true })
+        } else if (this.validateInput() === true) {
             var myHeaders = new Headers();
-            myHeaders.append("Access-Control-Allow-Origin", "http://localhost:5000");
-            myHeaders.append('Access-Control-Allow-Headers', 'Content-Type');
             myHeaders.append("Content-Type", "application/json");
 
             var signupData = JSON.stringify({
-                "name":this.state.name,
+                "name": this.state.name,
                 "homeAddress": this.state.address,
                 "email": this.state.email,
                 "crates": parseInt(this.state.twelvePack) + parseInt(this.state.sixPack) + parseInt(this.state.beerBottles),
@@ -150,10 +153,9 @@ export default class PickupRegister extends React.Component {
                 headers: myHeaders,
                 body: signupData,
                 redirect: 'follow',
-                mode: 'cors',
             };
 
-            fetch("http://localhost:5000/api/" + this.state.link_code, requestOptions)
+            fetch("/api/" + this.state.link_code, requestOptions)
                 .then(response => response.json())
                 .then(result => console.log(result))
                 .catch(error => console.log('error', error));
@@ -162,7 +164,7 @@ export default class PickupRegister extends React.Component {
     }
 
     componentDidMount() {
-        fetch("http://localhost:5000/api/" + this.state.link_code)
+        fetch("/api/" + this.state.link_code)
             .then(response => response.json())
             .then(result => {
                 let center = polylabel(result.geo_region.coordinates)
@@ -186,24 +188,24 @@ export default class PickupRegister extends React.Component {
                     <Marker anchor={this.state.address_latLong} />
                     <Polygon coordsArray={this.state.geo_region.coordinates[0]} />
                 </Map>
-                {this.state.dates_and_crates_left.length === 0 ? <p>Sorry! There are no more dates with available collection capacity.<br/>Check again soon to see if any open up.</p> : <p>Pickups are in the {this.pickupTimeString()}.</p>}
+                {this.state.dates_and_crates_left.length === 0 ? <p>Sorry! There are no more dates with available collection capacity.<br />Check again soon to see if any open up.</p> : <p>Pickups are in the {this.pickupTimeString()}.</p>}
                 <form hidden={this.state.dates_and_crates_left.length === 0} onSubmit={this.onSubmit}>
                     <label>
                         <Geolookup
                             placeholder="Search for your address"
                             label="Home Address:"
                             id="address"
-                            location={this.state.center}
                             disableAutoLookup={true}
                             onSuggestsLookup={onSuggestsLookup}
                             onGeocodeSuggest={onGeocodeSuggest}
                             getSuggestLabel={getSuggestLabel}
-                            radius="1"
+                            ref={el => this._geoSuggest = el}
                             autoActivateFirstSuggest={true}
                             style={{ 'suggests': { "margin": 0, "visibility": "hidden", "maxHeight": 0, "overflow": "hidden", "borderWidth": 0 } }}
                             onActivateSuggest={this.addressSelected}
                         />
                     </label>
+                    <p hidden={!this.state.promptSearch}>Please click search.</p>
                     <p hidden={this.state.isIn !== 1}>Sorry! You're not in our pickup area.<br />If this sounds wrong, try adding the more detail to your search ex. "123 Random St, Etobicoke".<br />The detected address will automatically appear on the map.</p>
                     <label hidden={this.state.disabled}>
                         Name:

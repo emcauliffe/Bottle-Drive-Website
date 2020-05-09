@@ -12,7 +12,7 @@ export default class Register extends React.Component {
     super(props)
 
     this.state = {
-      "name":"",
+      "name": "",
       "email": "",
       "password": "",
       "password_verify": "",
@@ -50,7 +50,7 @@ export default class Register extends React.Component {
 
   newRegion(features) {
     this.setState({ geo_region: features })
-    if (this.state.geo_region !== "" && this.state.geo_region.features !== ""){
+    if (this.state.geo_region !== "" && this.state.geo_region.features !== "") {
       console.log(this.state.geo_region.features[0].geometry)
     }
   }
@@ -101,13 +101,13 @@ export default class Register extends React.Component {
     }
 
     let onlyDates = [] //remove any null dates from state
-    this.state.pickupDates.map(i=>{
-      if (i !== null){
+    this.state.pickupDates.map(i => {
+      if (i !== null) {
         onlyDates.push(i)
       }
     })
 
-    this.setState({pickupDates:onlyDates})
+    this.setState({ pickupDates: onlyDates })
 
     if (alerts.length > 0) {
       let alertString = ""
@@ -122,20 +122,18 @@ export default class Register extends React.Component {
   handleNewRegistration(event) {
     if (this.validateInput() === true) {
       var myHeaders = new Headers();
-      myHeaders.append("Access-Control-Allow-Origin", "http://localhost:5000");
-      myHeaders.append('Access-Control-Allow-Headers', 'Content-Type');
       myHeaders.append("Content-Type", "application/json");
 
       var signupData = JSON.stringify({
         "name": this.state.name,
         "email": this.state.email,
         "password": this.state.password,
-        "geo_region":this.state.geo_region.features[0].geometry,
+        "geo_region": this.state.geo_region.features[0].geometry,
         "pickup_times": {
-          "days":this.state.pickupDates,
-          "times":[this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
+          "days": this.state.pickupDates,
+          "times": [this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
         },
-        "crates_limit":this.state.crates_limit,
+        "crates_limit": this.state.crates_limit,
         // "stops_limit":this.state.stops_limit
       })
 
@@ -144,10 +142,9 @@ export default class Register extends React.Component {
         headers: myHeaders,
         body: signupData,
         redirect: 'follow',
-        mode: 'cors',
       };
 
-      fetch("http://localhost:5000/api/auth/register", requestOptions)
+      fetch("/api/auth/register", requestOptions)
         .then(response => response.json())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
@@ -166,7 +163,7 @@ export default class Register extends React.Component {
           <form onSubmit={this.handleNewRegistration}>
             <label>
               Your name:
-                <input name="name" type="text" value={this.state.name} onChange={this.handleInputChange} required/>
+                <input name="name" type="text" value={this.state.name} onChange={this.handleInputChange} required />
             </label>
             <br />
             <br />
@@ -314,7 +311,7 @@ class Map extends React.Component {
             polygonControl={false}
           />
         </MapGL>
-        <button disabled={this.state.polygon} onClick={(event) => {this.setState({ mode: 'draw_polygon' });event.preventDefault();}}>Draw Region</button>
+        <button disabled={this.state.polygon} onClick={(event) => { this.setState({ mode: 'draw_polygon' }); event.preventDefault(); }}>Draw Region</button>
       </div>
     )
   }
