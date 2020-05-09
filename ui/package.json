@@ -34,7 +34,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-api": "cd ../api && venv/bin/flask run --no-debugger"
+    "start-api": "cd ../api && poetry run dev"
   },
   "eslintConfig": {
     "extends": "react-app"
