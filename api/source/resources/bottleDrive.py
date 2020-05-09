@@ -1,4 +1,4 @@
-from flask import Response, request, jsonify, session, send_from_directory
+from flask import Response, request, jsonify, session, send_from_directory, current_app
 from flask_restful import Resource
 from datetime import datetime
 import requests
@@ -32,11 +32,10 @@ class SignupApi(Resource):#for those wanting to get pickup
             body = request.get_json()
             #verify hCaptcha token
             token = body.get("token")
-            data = { 'secret': "HCAPTCHA_SECRET_KEY", 'response': token }
+            data = { 'secret': current_app.config["HCAPTCHA_SECRET_KEY"], 'response': token }
             response = requests.post(url="https://hcaptcha.com/siteverify", data=data)
             if response.json()["success"] == False :
                 raise InvalidTokenError
-                # print("invalid token")
             pickupInfo = PickupInfo.objects.get(link_code__exact=link_code, date__exact=body["date"], active=True)
             if(pickupInfo.addresses.filter(homeAddress=body["homeAddress"]).count() > 0):#checks if address is already registered
                 raise NotUniqueError
