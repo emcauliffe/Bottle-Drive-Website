@@ -4,12 +4,6 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from random import choice
 import enchant
 
-# class Movie(db.Document):
-#     name = db.StringField(required=True, unique=True)
-#     casts = db.ListField(db.StringField(), required=True)
-#     genres = db.ListField(db.StringField(), required=True)
-#     added_by = db.ReferenceField('User')
-
 class PickupAddresses(db.EmbeddedDocument):
     name = db.StringField(required=True)
     homeAddress = db.StringField(required=True)

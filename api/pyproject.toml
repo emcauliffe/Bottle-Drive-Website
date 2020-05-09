@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "source"
+version = "0.1.0"
+description = ""
+authors = ["Ethan M <14607273+emcauliffe@users.noreply.github.com>"]
+
+[tool.poetry.scripts]
+flask-dev = "scripts:flask"
+
+[tool.poetry.dependencies]
+python = "^3.6.9"
+flask = "^1.1.2"
+flask-cors = "^3.0.8"
+flask-mongoengine = "^0.9.5"
+pyenchant = "^3.0.1"
+datetime = "^4.3"
+requests = "^2.23.0"
+flask-restful = "^0.3.8"
+wheel = "^0.34.2"
+flask-bcrypt = "^0.7.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

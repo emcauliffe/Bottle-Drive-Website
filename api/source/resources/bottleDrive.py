@@ -4,9 +4,9 @@ from datetime import datetime
 import requests
 
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
-from resources.errors import SchemaValidationError, MovieAlreadyExistsError, InternalServerError, UpdatingMovieError, DeletingMovieError, MovieNotExistsError, InvalidTokenError
+from .errors import SchemaValidationError, MovieAlreadyExistsError, InternalServerError, UpdatingMovieError, DeletingMovieError, MovieNotExistsError, InvalidTokenError
 
-from database.models import User, PickupInfo, PickupAddresses
+from ..database.models import User, PickupInfo, PickupAddresses
 
 class SignupApi(Resource):#for those wanting to get pickup
     def get(self, link_code):

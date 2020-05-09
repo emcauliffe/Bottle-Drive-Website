@@ -1,9 +1,9 @@
 from flask import Response, request, make_response, jsonify, session, redirect
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist
-from resources.errors import SchemaValidationError, EmailAlreadyExistsError, UnauthorizedError, InternalServerError
+from .errors import SchemaValidationError, EmailAlreadyExistsError, UnauthorizedError, InternalServerError
 from flask_restful import Resource
 
-from database.models import User, PickupInfo
+from ..database.models import User, PickupInfo
 
 import datetime
 
