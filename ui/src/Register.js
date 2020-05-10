@@ -99,6 +99,9 @@ export default class Register extends React.Component {
     if (this.state.mornPickup === false && this.state.aftPickup === false && this.state.evePickup === false) {
       alerts.push("Please select a pickup timeslot")
     }
+    if (new Set(this.state.pickupDates).size !== this.state.pickupDates.length){ //returns true if there are duplicates
+      alerts.push("All dates must be unique")
+    }
 
     if (alerts.length > 0) {
       let alertString = ""
@@ -132,7 +135,7 @@ export default class Register extends React.Component {
           "days": onlyDates,
           "times": [this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
         },
-        "crates_limit": this.state.crates_limit,
+        "default_crates_limit": this.state.crates_limit,
         // "stops_limit":this.state.stops_limit
       })
 

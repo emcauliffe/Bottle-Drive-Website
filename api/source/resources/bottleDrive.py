@@ -41,9 +41,9 @@ class SignupApi(Resource):#for those wanting to get pickup
                 raise NotUniqueError
             pickupAddresses = PickupAddresses(homeAddress=body.get("homeAddress"), email=body.get("email"), crates=body.get("crates"), name=body.get("name"))
             pickupInfo.update(push__addresses=pickupAddresses, inc__crates=body.get("crates"))
+            #check if the max number of crates has been reached
             pickupInfo = PickupInfo.objects(id=pickupInfo.id).no_cache()
-            userInfo = User.objects.get(id=pickupInfo[0].created_by.id)
-            if(pickupInfo[0].crates>=userInfo.crates_limit):
+            if(pickupInfo[0].crates>=pickupInfo[0].crates_limit):
                 pickupInfo.update(active=False)
             return body.get("date")
         except DoesNotExist:
