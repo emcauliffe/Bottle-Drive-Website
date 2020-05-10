@@ -59,7 +59,7 @@ class SignupApi(Resource):#for those wanting to get pickup
 
 class CreateDriveApi(Resource):#to make a new bottle drive instance
 
-    def post(self, link_code):
+    def post(self):
         if 'userId' in session:
             try:
                 user_id = session['userId']
@@ -80,14 +80,19 @@ class CreateDriveApi(Resource):#to make a new bottle drive instance
 
 class ModifyDriveApi(Resource):#to modify a bottle drive instance
 
-    def put(self, link_code):
+    def put(self):
         if 'userId' in session:
             try:
                 user_id = session['userId']
                 body = request.get_json()
-                pickupInfo = PickupInfo.objects.get(link_code=link_code, created_by=user_id, date=body.get("date"))
-                PickupInfo.objects.get(link_code=link_code).update(**body)
-                return '', 200
+                print(body)
+                print("\n")
+                for i in body:
+                    pickupInfo = PickupInfo.objects.get(created_by=user_id, date=i.get("date"))
+                    pickupInfo.crates_limit = i.get("crates_limit")
+                    pickupInfo.active = i.get("active")
+                    pickupInfo.save()
+                return 'good', 200
             except InvalidQueryError:
                 raise SchemaValidationError
             except DoesNotExist:
@@ -95,12 +100,12 @@ class ModifyDriveApi(Resource):#to modify a bottle drive instance
             except Exception:
                 raise InternalServerError
 
-    def delete(self, link_code):
+    def delete(self):
         if 'userId' in session:
             try:
                 user_id = session['userId']
                 body = request.get_json()
-                pickupInfo = PickupInfo.objects.get(link_code=link_code, created_by=user_id, date=body.get("date"))
+                pickupInfo = PickupInfo.objects.get(created_by=user_id, date=body.get("date"))
                 user = User.objects.get(id=user_id)
                 driveIndex = user.drives.index(pickupInfo)
                 del user.drives[driveIndex]
