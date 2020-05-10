@@ -100,15 +100,6 @@ export default class Register extends React.Component {
       alerts.push("Please select a pickup timeslot")
     }
 
-    let onlyDates = [] //remove any null dates from state
-    this.state.pickupDates.map(i => {
-      if (i !== null) {
-        onlyDates.push(i)
-      }
-    })
-
-    this.setState({ pickupDates: onlyDates })
-
     if (alerts.length > 0) {
       let alertString = ""
       alerts.map(i => alertString = alertString + i + ", ")
@@ -121,6 +112,14 @@ export default class Register extends React.Component {
 
   handleNewRegistration(event) {
     if (this.validateInput() === true) {
+
+      let onlyDates = [] //remove any null dates from state
+      this.state.pickupDates.map(i => {
+        if (i !== null) {
+          onlyDates.push(i)
+        }
+      })
+
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
@@ -130,7 +129,7 @@ export default class Register extends React.Component {
         "password": this.state.password,
         "geo_region": this.state.geo_region.features[0].geometry,
         "pickup_times": {
-          "days": this.state.pickupDates,
+          "days": onlyDates,
           "times": [this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
         },
         "crates_limit": this.state.crates_limit,
