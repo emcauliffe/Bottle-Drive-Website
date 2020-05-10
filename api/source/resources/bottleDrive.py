@@ -120,9 +120,13 @@ class ViewDriveApi(Resource):
                 driveInfo = []
                 for i in pickupInfo:
                     driveInfo.append({
-                        "date": i["date"],
-                        "addresses": i["addresses"],
-                        "crates": i["crates"]
+                        "date": i["date"].strftime("%Y-%m-%d"),
+                        # "addresses": i["addresses"],
+                        "crates": i["crates"],
+                        "crates_limit": i["crates_limit"],
+                        # "stops": i["addresses"].len(),
+                        "active": i["active"],
+                        # "message": i["message"],
                     })
                 return jsonify(driveInfo)
             except DoesNotExist:

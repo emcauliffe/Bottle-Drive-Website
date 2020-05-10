@@ -16,7 +16,8 @@ class PickupInfo(db.Document):
     addresses = db.EmbeddedDocumentListField(PickupAddresses)
     crates = db.IntField()
     crates_limit = db.IntField(required=True)
-    date = db.DateField()
+    date = db.DateField(required=True)
+    # message = db.StringField()
     created_by = db.ReferenceField('User')
 
 class PickupTimes(db.EmbeddedDocument):
