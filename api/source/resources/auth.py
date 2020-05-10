@@ -16,7 +16,7 @@ class RegisterApi(Resource):
         user.generate_link_code()
         user.save()
         for i in user.pickup_times.days:
-            pickupInfo = PickupInfo(date=i, created_by=user, crates=0, link_code=user.link_code)
+            pickupInfo = PickupInfo(date=i, created_by=user, crates=0, crates_limit=user["default_crates_limit"], link_code=user["link_code"])
             pickupInfo.save()
             user.update(push__drives=pickupInfo)
         id = [user.id, pickupInfo.id]

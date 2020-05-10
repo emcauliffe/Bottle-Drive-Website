@@ -15,6 +15,7 @@ class PickupInfo(db.Document):
     link_code = db.StringField(required=True)
     addresses = db.EmbeddedDocumentListField(PickupAddresses)
     crates = db.IntField()
+    crates_limit = db.IntField(required=True)
     date = db.DateField()
     created_by = db.ReferenceField('User')
 
@@ -28,7 +29,7 @@ class User(db.Document):
     password = db.StringField(required=True, min_length=6)
     geo_region = db.PolygonField(required=True)
     pickup_times = db.EmbeddedDocumentField(PickupTimes, required=True)
-    crates_limit = db.IntField()
+    default_crates_limit = db.IntField()
     stops_limit = db.IntField()
     link_code = db.StringField(required=True, unique=True)
     drives = db.ListField(db.ReferenceField('PickupInfo', reverse_delete_rule=db.PULL))
