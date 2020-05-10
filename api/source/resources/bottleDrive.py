@@ -65,12 +65,12 @@ class CreateDriveApi(Resource):#to make a new bottle drive instance
                 user_id = session['userId']
                 body = request.get_json()
                 user = User.objects.get(id=user_id)
-                pickupInfo =  PickupInfo(**body, created_by=user, active=True, link_code=user.link_code )
+                pickupInfo =  PickupInfo(**body, created_by=user)
                 pickupInfo.save()
                 user.update(push__drives=pickupInfo)
                 user.save()
                 id = pickupInfo.id
-                return "success", 200
+                return {'id': str(id)}, 200
             except (FieldDoesNotExist, ValidationError):
                 raise SchemaValidationError
             except NotUniqueError:
@@ -85,12 +85,14 @@ class ModifyDriveApi(Resource):#to modify a bottle drive instance
             try:
                 user_id = session['userId']
                 body = request.get_json()
+                print(body)
+                print("\n")
                 for i in body:
                     pickupInfo = PickupInfo.objects.get(created_by=user_id, date=i.get("date"))
                     pickupInfo.crates_limit = i.get("crates_limit")
                     pickupInfo.active = i.get("active")
                     pickupInfo.save()
-                return "good", 200
+                return 'good', 200
             except InvalidQueryError:
                 raise SchemaValidationError
             except DoesNotExist:

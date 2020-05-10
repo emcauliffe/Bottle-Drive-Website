@@ -14,11 +14,11 @@ class PickupInfo(db.Document):
     active = db.BooleanField(default=True)
     link_code = db.StringField(required=True)
     addresses = db.EmbeddedDocumentListField(PickupAddresses)
-    crates = db.IntField(default=0)
+    crates = db.IntField()
     crates_limit = db.IntField(required=True)
     date = db.DateField(required=True)
     # message = db.StringField()
-    created_by = db.ReferenceField('User',required=True)
+    created_by = db.ReferenceField('User')
 
 class PickupTimes(db.EmbeddedDocument):
     days = db.ListField(db.StringField(), required=True)
