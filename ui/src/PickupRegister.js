@@ -53,18 +53,22 @@ export default class PickupRegister extends React.Component {
     }
 
     addressSelected(result) {
-        this.setState({ promptSearch: false })
-        const address = result.raw.address.house_number + " " + result.raw.address.road + ", " + result.raw.address.city + ", " + result.raw.address.state
-        const latLong = [parseFloat(result.raw.lat), parseFloat(result.raw.lon)]
-        this.setState({ address: address, address_latLong: latLong })
-        const isIn = PointIn(this.state.geo_region.coordinates[0], [latLong[1], latLong[0]])//the geoJSON is stored as lonLat, so reverse latLong order (non-destructive)
-        if (isIn > 0) {
-            this.setState({ disabled: true })
-            this._geoSuggest.clear()
-        } else {
-            this.setState({ disabled: false })
+        try {
+            this.setState({ promptSearch: false })
+            const address = result.raw.address.house_number + " " + result.raw.address.road + ", " + result.raw.address.city + ", " + result.raw.address.state
+            const latLong = [parseFloat(result.raw.lat), parseFloat(result.raw.lon)]
+            this.setState({ address: address, address_latLong: latLong })
+            const isIn = PointIn(this.state.geo_region.coordinates[0], [latLong[1], latLong[0]])//the geoJSON is stored as lonLat, so reverse latLong order (non-destructive)
+            if (isIn > 0) {
+                this.setState({ disabled: true })
+                this._geoSuggest.clear()
+            } else {
+                this.setState({ disabled: false })
+            }
+            this.setState({ isIn: isIn })
+        } catch {
+            this.setState({isIn:1})
         }
-        this.setState({ isIn: isIn })
     }
 
     getMaxCrates() {
