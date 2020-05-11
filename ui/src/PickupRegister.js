@@ -282,7 +282,6 @@ export default class PickupRegister extends React.Component {
 }
 
 function mapTilerProvider(x, y, z, dpr) {
-    // return `https://maps.wikimedia.org/osm-intl/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png`
     return `https://a.tile.openstreetmap.org/${z}/${x}/${y}.png`
 }
 

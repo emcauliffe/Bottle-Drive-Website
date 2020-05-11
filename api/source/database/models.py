@@ -6,7 +6,7 @@ import enchant
 
 class PickupAddresses(db.EmbeddedDocument):
     name = db.StringField(required=True)
-    homeAddress = db.StringField(required=True)
+    homeAddress = db.StringField(unique=True, sparse=True, required=True)
     email = db.EmailField(required=True)
     crates = db.IntField(required=True)
 
@@ -14,10 +14,11 @@ class PickupInfo(db.Document):
     active = db.BooleanField(default=True)
     link_code = db.StringField(required=True)
     addresses = db.EmbeddedDocumentListField(PickupAddresses)
-    crates = db.IntField()
-    crates_limit = db.IntField(required=True)
-    date = db.DateField()
-    created_by = db.ReferenceField('User')
+    crates = db.IntField(default=0)
+    crates_limit = db.IntField(required=True, min_value=1)
+    date = db.DateTimeField(required=True, unique=True)
+    # message = db.StringField()
+    created_by = db.ReferenceField('User',required=True)
 
 class PickupTimes(db.EmbeddedDocument):
     days = db.ListField(db.StringField(), required=True)
