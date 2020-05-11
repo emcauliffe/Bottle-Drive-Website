@@ -11,6 +11,7 @@ export default class ViewDrives extends React.Component {
                 "crates_limit": ""
             },
             "delete": [],
+            "link_code":""
         }
 
         this.loadDrives = this.loadDrives.bind(this)
@@ -20,16 +21,19 @@ export default class ViewDrives extends React.Component {
         this.deleteDrive = this.deleteDrive.bind(this)
         this.setNewDrive = this.setNewDrive.bind(this)
         this.sendNewDrive = this.sendNewDrive.bind(this)
-    }
-
-    componentDidMount() {
+        
         this.loadDrives()
     }
 
     loadDrives() {
         fetch("/api/list")
-            .then(response => response.json())
-            .then(result => this.setState({ drivesArray: result, modified: false }))
+            .then(response => {
+                if (response.status === 403){
+                    window.location.replace("/login")
+                } else if (response.status === 200) {
+                    response.json().then(result => this.setState({ drivesArray: result.drives, link_code: result.link_code, modified: false }))
+                }
+            })
             .catch(error => console.log('error', error));
     }
 
@@ -149,6 +153,7 @@ export default class ViewDrives extends React.Component {
                 <button disabled={!this.state.modified} onClick={this.loadDrives}>Undo Changes</button>
                 <button disabled={!this.state.modified} onClick={this.updateDrives}>Save Changes</button>
                 <br />
+                <p>Your shareable link is: <a href={"/"+this.state.link_code}>bottlesagainstcovid.site/{this.state.link_code}</a> <button onClick={()=>navigator.clipboard.writeText(`https://bottlesagainstcovid.site/${this.state.link_code}`)}>copy</button></p>
                 <button>Logout</button>
             </div>
         )
@@ -166,7 +171,7 @@ function DrivesTable(props) {
                 <td><input type="number" value={elem.crates_limit} name={i} min={elem.crates >= 1 ? elem.crates : 1} onChange={props.updateLimit} /></td>
                 {/* <td>{elem.crates_limit}</td> */}
                 <td><input type="checkbox" checked={elem.active} onChange={props.changeActive} name={i} disabled={elem.crates >= elem.crates_limit} /></td>
-                <td><a href={"/api/download?date=" + elem.date} style={{textDecoration: "none"}} target="_blank"><span role="img" aria-label="click to download">⬇️</span></a></td>
+                <td><a href={"/api/download?date=" + elem.date} style={{textDecoration: "none"}} target="_blank" rel="noopener noreferrer"><span role="img" aria-label="click to download">⬇️</span></a></td>
                 <td><span role="img" aria-label="click to delete" style={{cursor:"pointer"}} onClick={() => props.deleteDrive(i)}>❌</span></td>
             </tr>
         )

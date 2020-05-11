@@ -306,7 +306,7 @@ function DatesSelect(props) {
     let selectOptions = props.options.map((date, i) => {
         return (
             <option key={i} value={[date, i]}>
-                {daysOfWeek[date.getDay()] + ", " + monthsOfYear[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear()}
+                {daysOfWeek[date.getUTCDay()] + ", " + monthsOfYear[date.getUTCMonth()] + " " + date.getUTCDate() + ", " + date.getUTCFullYear()}
             </option>
         )
     })

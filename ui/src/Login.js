@@ -7,7 +7,8 @@ export default class Login extends React.Component {
     super(props);
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      unauthorized: false
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
@@ -40,11 +41,25 @@ export default class Login extends React.Component {
     };
 
     fetch("/api/auth/login", requestOptions)
-      .then(response => response.json())
-      .then(result => console.log(result))
-      .catch(error => console.log('error', error));
+      .then(response => {
+        if (response.status === 200) {
+          window.location.replace(response.url)
+        } else if (response.status === 401) {
+          this.setState({ email: "", password: "", unauthorized: true })
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      });
 
     event.preventDefault();
+  }
+
+  componentDidMount() {
+    fetch("/api/auth/login")
+      .then(response => response.json())
+      .then(result => result && window.location.replace("/list"))
+      .catch(error => console.log(error))
   }
 
   render() {
@@ -57,7 +72,7 @@ export default class Login extends React.Component {
           <form onSubmit={this.handleLoginSubmit}>
             <label>
               email:
-                    <input name="email" type="text" value={this.state.email} onChange={this.handleInputChange} />
+                    <input name="email" type="email" value={this.state.email} onChange={this.handleInputChange} />
             </label>
             <br />
             <br />
@@ -69,6 +84,8 @@ export default class Login extends React.Component {
             <br />
             <input type="submit" value="Login" />
           </form>
+          <p hidden={!this.state.unauthorized}>Invalid username or password.</p>
+          <p><a href="/signup">Click here to sign up.</a></p>
         </header>
       </div>
     );

@@ -1,4 +1,4 @@
-from flask import Response, request, jsonify, session, send_from_directory, current_app
+from flask import Response, request, jsonify, session, send_from_directory, current_app, abort
 from flask_restful import Resource
 from datetime import datetime
 import requests
@@ -64,6 +64,7 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
             try:
                 user_id=session['userId']
                 pickupInfo = PickupInfo.objects(created_by=user_id).order_by('date')
+                user = User.objects.get(id=user_id)
                 driveInfo = []
                 for i in pickupInfo:
                     driveInfo.append({
@@ -75,11 +76,13 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
                         "active": i["active"],
                         # "message": i["message"],
                     })
-                return jsonify(driveInfo)
+                return jsonify({"drives": driveInfo, "link_code": user.link_code})
             except DoesNotExist:
                 raise MovieNotExistsError
             except Exception:
                 raise InternalServerError
+        else:
+            abort(403, "unauthorized")
 
     def post(self):#make a new drive instance
         if 'userId' in session:
@@ -99,6 +102,8 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
                 raise MovieAlreadyExistsError
             except Exception as e:
                 raise InternalServerError
+        else:
+            abort(403, "unauthorized")
     
     def put(self):#modify existing instances
         if 'userId' in session:
@@ -120,6 +125,8 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
                 raise UpdatingMovieError
             except Exception:
                 raise InternalServerError
+        else:
+            abort(403, "unauthorized")
 
     def delete(self):#delete instances
         if 'userId' in session:
@@ -137,6 +144,8 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
                 raise DeletingMovieError
             except Exception:
                 raise InternalServerError
+        else:
+            abort(403, "unauthorized")
 
 class DownloadAddressesApi(Resource):
 
@@ -176,3 +185,5 @@ class DownloadAddressesApi(Resource):
                 return response
             except Exception:
                 raise InternalServerError
+        else:
+            abort(403, "unauthorized")
