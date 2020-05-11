@@ -28,7 +28,7 @@ export default class Register extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.newRegion = this.newRegion.bind(this)
     this.handleDateAdded = this.handleDateAdded.bind(this)
-    this.addPickupDate = this.addPickupDate.bind(this)
+    this.changePickupDate = this.changePickupDate.bind(this)
     this.removePickupDate = this.removePickupDate.bind(this)
     this.validateInput = this.validateInput.bind(this)
     this.handleNewRegistration = this.handleNewRegistration.bind(this)
@@ -60,7 +60,7 @@ export default class Register extends React.Component {
     event.preventDefault();
   }
 
-  addPickupDate(event) {
+  changePickupDate(event) {
     const index = event.target.name
     let newPickupDates = [...this.state.pickupDates]
     newPickupDates[index] = event.target.value
@@ -99,7 +99,7 @@ export default class Register extends React.Component {
     if (this.state.mornPickup === false && this.state.aftPickup === false && this.state.evePickup === false) {
       alerts.push("Please select a pickup timeslot")
     }
-    if (new Set(this.state.pickupDates).size !== this.state.pickupDates.length){ //returns true if there are duplicates
+    if (new Set(this.state.pickupDates).size !== this.state.pickupDates.length) { //returns true if there are duplicates
       alerts.push("All dates must be unique")
     }
 
@@ -201,7 +201,7 @@ export default class Register extends React.Component {
             <br />
             <label>Pick your collection dates:</label>
             <br />
-            <NumberList numbers={this.state.pickupDates} updateDate={this.addPickupDate} deleteDate={this.removePickupDate} />
+            <NumberList numbers={this.state.pickupDates} updateDate={this.changePickupDate} deleteDate={this.removePickupDate} />
             <button onClick={this.handleDateAdded}>Add another date</button>
             <br />
             <br />
@@ -327,13 +327,29 @@ const mapStyle = {
     "maputnik:renderer": "mbgljs"
   },
   "sources": {
-    "osm": {
+    "osm a": {
       "type": "raster",
-      "tiles": ["https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png"],
+      "tiles": ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      "minzoom": 0,
+      "maxzoom": 19
+    },
+    "osm b": {
+      "type": "raster",
+      "tiles": ["https://b.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      "minzoom": 0,
+      "maxzoom": 19
+    },
+    "osm c": {
+      "type": "raster",
+      "tiles": ["https://c.tile.openstreetmap.org/{z}/{x}/{y}.png"],
       "minzoom": 0,
       "maxzoom": 19
     }
   },
-  "layers": [{ "id": "osm", "type": "raster", "source": "osm", "maxzoom": 24 }],
+  "layers": [
+    { "id": "A osm", "type": "raster", "source": "osm a" },
+    { "id": "B osm", "type": "raster", "source": "osm b" },
+    { "id": "C osm", "type": "raster", "source": "osm c" }
+  ],
   "id": "osm-liberty"
 }
