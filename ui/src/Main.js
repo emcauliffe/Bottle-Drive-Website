@@ -14,7 +14,7 @@ const Main = () => {
       <Route exact path='/signup' component={Register}></Route>
       <Route exact path='/login' component={Login}></Route>
       <Route exact path='/(\w{5})' component={PickupRegister}></Route>
-      <Route exact path='/view' component={ViewDrives}></Route>
+      <Route exact path='/list' component={ViewDrives}></Route>
     </Switch>
   );
 }

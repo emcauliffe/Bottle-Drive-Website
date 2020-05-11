@@ -2,6 +2,8 @@ from flask import Response, request, jsonify, session, send_from_directory, curr
 from flask_restful import Resource
 from datetime import datetime
 import requests
+import csv
+from io import StringIO
 
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
 from .errors import SchemaValidationError, MovieAlreadyExistsError, InternalServerError, UpdatingMovieError, DeletingMovieError, MovieNotExistsError, InvalidTokenError
@@ -136,25 +138,41 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
             except Exception:
                 raise InternalServerError
 
-# class ViewDriveApi(Resource):
-    # def get(self):
-    #     if 'userId' in session:
-    #         try:
-    #             user_id=session['userId']
-    #             pickupInfo = PickupInfo.objects(created_by=user_id).order_by('date')
-    #             driveInfo = []
-    #             for i in pickupInfo:
-    #                 driveInfo.append({
-    #                     "date": i["date"].strftime("%Y-%m-%d"),
-    #                     # "addresses": i["addresses"],
-    #                     "crates": i["crates"],
-    #                     "crates_limit": i["crates_limit"],
-    #                     # "stops": i["addresses"].len(),
-    #                     "active": i["active"],
-    #                     # "message": i["message"],
-    #                 })
-    #             return jsonify(driveInfo)
-    #         except DoesNotExist:
-    #             raise MovieNotExistsError
-    #         except Exception:
-    #             raise InternalServerError
+class DownloadAddressesApi(Resource):
+
+    def get(self):
+        if 'userId' in session:
+            try:
+                user_id = session['userId']
+                # print()
+                date = request.args.get('date', '')
+                pickupInfo = PickupInfo.objects.get(created_by=user_id, date=date)
+
+                def generate(pickupInfo):
+                    data = StringIO()
+                    w = csv.writer(data)
+
+                    # write header
+                    w.writerow(('Name', 'Address', "e-mail", "boxes"))
+                    yield data.getvalue()
+                    data.seek(0)
+                    data.truncate(0)
+
+                    for item in pickupInfo.addresses:
+                        w.writerow((
+                            item.name,
+                            item.homeAddress,
+                            item.email,
+                            item.crates
+                        ))
+                        yield data.getvalue()
+                        data.seek(0)
+                        data.truncate(0)
+
+                # stream the response as the data is generated
+                response = Response(generate(pickupInfo), mimetype='text/csv')
+                # add a filename
+                response.headers.set("Content-Disposition", "attachment", filename=f"{pickupInfo.date.strftime('%Y-%m-%d')}-pickup-addresses.csv")
+                return response
+            except Exception:
+                raise InternalServerError

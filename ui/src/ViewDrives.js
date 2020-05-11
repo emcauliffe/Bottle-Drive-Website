@@ -166,8 +166,8 @@ function DrivesTable(props) {
                 <td><input type="number" value={elem.crates_limit} name={i} min={elem.crates >= 1 ? elem.crates : 1} onChange={props.updateLimit} /></td>
                 {/* <td>{elem.crates_limit}</td> */}
                 <td><input type="checkbox" checked={elem.active} onChange={props.changeActive} name={i} disabled={elem.crates >= elem.crates_limit} /></td>
-                <td><span role="img" aria-label="click to download" onClick={() => console.log("download")}>⬇️</span></td>
-                <td><span role="img" aria-label="click to delete" onClick={() => props.deleteDrive(i)}>❌</span></td>
+                <td><a href={"/api/download?date=" + elem.date} style={{textDecoration: "none"}} target="_blank"><span role="img" aria-label="click to download">⬇️</span></a></td>
+                <td><span role="img" aria-label="click to delete" style={{cursor:"pointer"}} onClick={() => props.deleteDrive(i)}>❌</span></td>
             </tr>
         )
     })
@@ -194,7 +194,7 @@ function DrivesTable(props) {
                     <td>--</td>
                     {/* <td><input type="checkbox" /></td> */}
                     <td>--</td>
-                    <td><span role="img" aria-label="click to add" onClick={props.sendNewDrive}>➕</span></td>
+                    <td><span role="img" aria-label="click to add" style={{cursor:"pointer"}} onClick={props.sendNewDrive}>➕</span></td>
                 </tr>
             </tbody>
         </table>
