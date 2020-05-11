@@ -1,4 +1,4 @@
-from flask import Response, request, make_response, jsonify, session, redirect, url_for
+from flask import Response, request, make_response, jsonify, session, redirect, abort
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist
 from .errors import SchemaValidationError, EmailAlreadyExistsError, UnauthorizedError, InternalServerError
 from flask_restful import Resource
@@ -40,9 +40,9 @@ class LoginApi(Resource):
             raise UnauthorizedError
         session['userId'] = str(user.id)
         return redirect("/list")
-        # return str(session['userId'])
     except (UnauthorizedError, DoesNotExist):
-        raise UnauthorizedError
+        # raise UnauthorizedError
+        abort(401, "Unauthorized")
     except Exception as e:
         raise InternalServerError
 
