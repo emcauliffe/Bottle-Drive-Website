@@ -16,6 +16,8 @@ export default class ViewDrives extends React.Component {
         this.loadDrives = this.loadDrives.bind(this)
         this.updateDrives = this.updateDrives.bind(this)
         this.toggleDateActive = this.toggleDateActive.bind(this)
+        this.updateCrateLimit = this.updateCrateLimit.bind(this)
+        this.deleteDrive = this.deleteDrive.bind(this)
         this.setNewDrive = this.setNewDrive.bind(this)
         this.sendNewDrive = this.sendNewDrive.bind(this)
     }
@@ -25,7 +27,7 @@ export default class ViewDrives extends React.Component {
     }
 
     loadDrives() {
-        fetch("/api/view")
+        fetch("/api/list")
             .then(response => response.json())
             .then(result => this.setState({ drivesArray: result, modified: false }))
             .catch(error => console.log('error', error));
@@ -44,7 +46,7 @@ export default class ViewDrives extends React.Component {
             redirect: 'follow',
         };
 
-        fetch("/api/modify", requestOptions)
+        fetch("/api/list", requestOptions)
             .then(response => response.json())
             .then(this.setState({ modified: false }))
             .catch(error => console.log('error', error));
@@ -54,9 +56,42 @@ export default class ViewDrives extends React.Component {
     toggleDateActive(event) {
         const index = event.target.name
         const activeVal = this.state.drivesArray[index].active
-        let updatedDrivesArray = JSON.parse(JSON.stringify(this.state.drivesArray)) //provides a deep copy of the object
+        let updatedDrivesArray = this.state.drivesArray.map((elem) => elem) //provides a deep copy of the object
         updatedDrivesArray[index].active = !activeVal
         this.setState({ drivesArray: updatedDrivesArray, modified: true })
+    }
+
+    updateCrateLimit(event) {
+        const index = event.target.name
+        const value = event.target.value
+        let updatedDrivesArray = this.state.drivesArray.map((elem) => elem) //provides a deep copy of the object
+        updatedDrivesArray[index].crates_limit = value
+        this.setState({ drivesArray: updatedDrivesArray, modified: true })
+    }
+
+    deleteDrive(index) {
+
+        if (window.confirm("Confirm delete drive on " + this.state.drivesArray[index].date + "?")) {
+
+            const deleteDate = this.state.drivesArray[index].date
+
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                body: JSON.stringify({ "date": deleteDate }),
+                redirect: 'follow',
+            };
+
+            fetch("/api/list", requestOptions)
+                .then(response => response.json())
+                .then(() => {
+                    this.loadDrives()
+                })
+                .catch(error => console.log('error', error));
+        }
     }
 
     setNewDrive(event) {
@@ -84,9 +119,12 @@ export default class ViewDrives extends React.Component {
             redirect: 'follow',
         };
 
-        fetch("/api/create", requestOptions)
+        fetch("/api/list", requestOptions)
             .then(response => response.json())
-            .then(this.loadDrives())
+            .then(() => {
+                this.loadDrives()
+                this.setState({ newDrive: { "date": "", "crates_limit": "" } })
+            })
             .catch(error => console.log('error', error));
     }
 
@@ -97,8 +135,10 @@ export default class ViewDrives extends React.Component {
                 <DrivesTable
                     drivesArray={this.state.drivesArray}
                     newDrive={this.state.newDrive}
-                    headersArray={["Date", "Boxes signed up", "Boxes limit", "Active", "Download Spreadsheet", "Add/Delete"]}
+                    headersArray={["Date", "Boxes signed up", "Boxes limit", "Active", "Addresses Spreadsheet", "Add/Delete"]}
                     changeActive={this.toggleDateActive}
+                    updateLimit={this.updateCrateLimit}
+                    deleteDrive={this.deleteDrive}
                     setNewDrive={this.setNewDrive}
                     sendNewDrive={this.sendNewDrive}
                     style={{
@@ -117,19 +157,17 @@ export default class ViewDrives extends React.Component {
 
 function DrivesTable(props) {
 
-    // const totalDrives = props.drivesArray.concat(props.newDriveArray)
-
     let body = props.drivesArray.map((elem, i) => {
         const dateObj = new Date(elem.date)
         return (
             <tr key={i}>
                 <td>{daysOfWeek[dateObj.getUTCDay()]}, {monthsOfYear[dateObj.getUTCMonth()]} {dateObj.getUTCDate()}, {dateObj.getUTCFullYear()}</td>
                 <td>{elem.crates}</td>
-                <td><input type="number" value={elem.crates_limit} name={i} /></td>
+                <td><input type="number" value={elem.crates_limit} name={i} min={elem.crates >= 1 ? elem.crates : 1} onChange={props.updateLimit} /></td>
                 {/* <td>{elem.crates_limit}</td> */}
-                <td><input type="checkbox" checked={elem.active} onChange={props.changeActive} name={i} /></td>
+                <td><input type="checkbox" checked={elem.active} onChange={props.changeActive} name={i} disabled={elem.crates >= elem.crates_limit} /></td>
                 <td><span role="img" aria-label="click to download" onClick={() => console.log("download")}>⬇️</span></td>
-                <td><span role="img" aria-label="click to delete" onClick={() => console.log("delete")}>❌</span></td>
+                <td><span role="img" aria-label="click to delete" onClick={() => props.deleteDrive(i)}>❌</span></td>
             </tr>
         )
     })
@@ -152,7 +190,7 @@ function DrivesTable(props) {
                 <tr>
                     <td><input type="date" name="date" value={props.newDrive.date} onChange={props.setNewDrive} /></td>
                     <td>--</td>
-                    <td><input type="number" name="crates_limit" min="1" value={props.newDrive.crates_limit} onChange={props.setNewDrive} /></td>
+                    <td><input type="number" name="crates_limit" min={1} value={props.newDrive.crates_limit} onChange={props.setNewDrive} /></td>
                     <td>--</td>
                     {/* <td><input type="checkbox" /></td> */}
                     <td>--</td>

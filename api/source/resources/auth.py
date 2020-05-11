@@ -39,7 +39,7 @@ class LoginApi(Resource):
         if not authorized:
             raise UnauthorizedError
         session['userId'] = str(user.id)
-        return redirect("/view")
+        return redirect("/list")
         # return str(session['userId'])
     except (UnauthorizedError, DoesNotExist):
         raise UnauthorizedError

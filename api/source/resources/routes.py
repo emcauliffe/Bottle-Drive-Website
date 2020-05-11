@@ -1,4 +1,4 @@
-from .bottleDrive import SignupApi, CreateDriveApi, ModifyDriveApi, ViewDriveApi
+from .bottleDrive import SignupApi, ListDriveApi
 from .auth import RegisterApi, LoginApi
 
 def initialize_routes(api):
@@ -7,6 +7,4 @@ def initialize_routes(api):
     api.add_resource(LoginApi, '/api/auth/login')
 
     api.add_resource(SignupApi, "/api/<link_code>")
-    api.add_resource(CreateDriveApi, "/api/create")
-    api.add_resource(ModifyDriveApi, "/api/modify")
-    api.add_resource(ViewDriveApi, "/api/view")
+    api.add_resource(ListDriveApi, "/api/list")

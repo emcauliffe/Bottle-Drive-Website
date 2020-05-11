@@ -11,7 +11,7 @@ from ..database.models import User, PickupInfo, PickupAddresses
 class SignupApi(Resource):#for those wanting to get pickup
     def get(self, link_code):
         try:
-            pickupInfo = PickupInfo.objects(link_code__exact=link_code)
+            pickupInfo = PickupInfo.objects(link_code__exact=link_code).order_by('date')
             userInfo = User.objects.get(id=pickupInfo[0].created_by.id)
             pickupObj = {
                 "drive_name":userInfo.name,
@@ -37,8 +37,6 @@ class SignupApi(Resource):#for those wanting to get pickup
             if response.json()["success"] == False :
                 raise InvalidTokenError
             pickupInfo = PickupInfo.objects.get(link_code__exact=link_code, date__exact=body["date"], active=True)
-            if(pickupInfo.addresses.filter(homeAddress=body["homeAddress"]).count() > 0):#checks if address is already registered
-                raise NotUniqueError
             pickupAddresses = PickupAddresses(homeAddress=body.get("homeAddress"), email=body.get("email"), crates=body.get("crates"), name=body.get("name"))
             pickupInfo.update(push__addresses=pickupAddresses, inc__crates=body.get("crates"))
             #check if the max number of crates has been reached
@@ -57,9 +55,31 @@ class SignupApi(Resource):#for those wanting to get pickup
         except Exception as e:
             raise InternalServerError
 
-class CreateDriveApi(Resource):#to make a new bottle drive instance
+class ListDriveApi(Resource):#to modify a bottle drive instance
 
-    def post(self):
+    def get(self):
+        if 'userId' in session:
+            try:
+                user_id=session['userId']
+                pickupInfo = PickupInfo.objects(created_by=user_id).order_by('date')
+                driveInfo = []
+                for i in pickupInfo:
+                    driveInfo.append({
+                        "date": i["date"].strftime("%Y-%m-%d"),
+                        # "addresses": i["addresses"],
+                        "crates": i["crates"],
+                        "crates_limit": i["crates_limit"],
+                        # "stops": i["addresses"].len(),
+                        "active": i["active"],
+                        # "message": i["message"],
+                    })
+                return jsonify(driveInfo)
+            except DoesNotExist:
+                raise MovieNotExistsError
+            except Exception:
+                raise InternalServerError
+
+    def post(self):#make a new drive instance
         if 'userId' in session:
             try:
                 user_id = session['userId']
@@ -77,10 +97,8 @@ class CreateDriveApi(Resource):#to make a new bottle drive instance
                 raise MovieAlreadyExistsError
             except Exception as e:
                 raise InternalServerError
-
-class ModifyDriveApi(Resource):#to modify a bottle drive instance
-
-    def put(self):
+    
+    def put(self):#modify existing instances
         if 'userId' in session:
             try:
                 user_id = session['userId']
@@ -88,7 +106,10 @@ class ModifyDriveApi(Resource):#to modify a bottle drive instance
                 for i in body:
                     pickupInfo = PickupInfo.objects.get(created_by=user_id, date=i.get("date"))
                     pickupInfo.crates_limit = i.get("crates_limit")
-                    pickupInfo.active = i.get("active")
+                    if int(i.get("crates_limit")) <= pickupInfo.crates:
+                        pickupInfo.active = False
+                    else:
+                        pickupInfo.active = i.get("active")
                     pickupInfo.save()
                 return "good", 200
             except InvalidQueryError:
@@ -98,12 +119,13 @@ class ModifyDriveApi(Resource):#to modify a bottle drive instance
             except Exception:
                 raise InternalServerError
 
-    def delete(self):
+    def delete(self):#delete instances
         if 'userId' in session:
             try:
                 user_id = session['userId']
                 body = request.get_json()
                 pickupInfo = PickupInfo.objects.get(created_by=user_id, date=body.get("date"))
+                # print(pickupInfo.date)
                 user = User.objects.get(id=user_id)
                 driveIndex = user.drives.index(pickupInfo)
                 del user.drives[driveIndex]
@@ -114,25 +136,25 @@ class ModifyDriveApi(Resource):#to modify a bottle drive instance
             except Exception:
                 raise InternalServerError
 
-class ViewDriveApi(Resource):
-    def get(self):
-        if 'userId' in session:
-            try:
-                user_id=session['userId']
-                pickupInfo = PickupInfo.objects(created_by=user_id)
-                driveInfo = []
-                for i in pickupInfo:
-                    driveInfo.append({
-                        "date": i["date"].strftime("%Y-%m-%d"),
-                        # "addresses": i["addresses"],
-                        "crates": i["crates"],
-                        "crates_limit": i["crates_limit"],
-                        # "stops": i["addresses"].len(),
-                        "active": i["active"],
-                        # "message": i["message"],
-                    })
-                return jsonify(driveInfo)
-            except DoesNotExist:
-                raise MovieNotExistsError
-            except Exception:
-                raise InternalServerError
+# class ViewDriveApi(Resource):
+    # def get(self):
+    #     if 'userId' in session:
+    #         try:
+    #             user_id=session['userId']
+    #             pickupInfo = PickupInfo.objects(created_by=user_id).order_by('date')
+    #             driveInfo = []
+    #             for i in pickupInfo:
+    #                 driveInfo.append({
+    #                     "date": i["date"].strftime("%Y-%m-%d"),
+    #                     # "addresses": i["addresses"],
+    #                     "crates": i["crates"],
+    #                     "crates_limit": i["crates_limit"],
+    #                     # "stops": i["addresses"].len(),
+    #                     "active": i["active"],
+    #                     # "message": i["message"],
+    #                 })
+    #             return jsonify(driveInfo)
+    #         except DoesNotExist:
+    #             raise MovieNotExistsError
+    #         except Exception:
+    #             raise InternalServerError
