@@ -40,11 +40,17 @@ export default class Login extends React.Component {
     };
 
     fetch("/api/auth/login", requestOptions)
-      .then(response => response.json())
-      .then(result => console.log(result))
+      .then(response => window.location.replace(response.url))
       .catch(error => console.log('error', error));
 
     event.preventDefault();
+  }
+
+  componentDidMount() {
+    fetch("/api/auth/login")
+      .then(response => response.json())
+      .then(result => result && window.location.replace("/list"))
+      .catch(error => console.log(error))
   }
 
   render() {

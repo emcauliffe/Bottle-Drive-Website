@@ -22,7 +22,7 @@ class RegisterApi(Resource):
         id = [user.id, pickupInfo.id]
         user.save()
         pickupInfo.save()
-        return {'id': str(id)}, 200
+        return redirect("/list")
     except FieldDoesNotExist:
         raise SchemaValidationError
     except NotUniqueError:
@@ -43,5 +43,14 @@ class LoginApi(Resource):
         # return str(session['userId'])
     except (UnauthorizedError, DoesNotExist):
         raise UnauthorizedError
+    except Exception as e:
+        raise InternalServerError
+
+ def get(self):
+    try:
+        if 'userId' in session:
+            return jsonify(True)
+        else:
+            return jsonify(False)
     except Exception as e:
         raise InternalServerError
