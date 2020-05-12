@@ -19,6 +19,7 @@ export default class PickupRegister extends React.Component {
             "geo_region": {
                 "coordinates": [0]
             },
+            "header": "",
             "dates_and_crates_left": [],
             "pickup_times": [],
             "hCaptcha_token": "",
@@ -203,6 +204,7 @@ export default class PickupRegister extends React.Component {
         return (
             <div>
                 <h1>{this.state.drive_name}'s Bottle Drive</h1>
+                {this.state.header !=="" && <h3>{this.state.header}</h3>}
                 <p>Pickup Region:</p>
                 <Map provider={mapTilerProvider}
                     dprs={[1, 2]}

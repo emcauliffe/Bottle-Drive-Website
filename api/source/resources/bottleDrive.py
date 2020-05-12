@@ -20,6 +20,7 @@ class SignupApi(Resource):#for those wanting to get pickup
                 "pickup_times": userInfo.pickup_times,
                 "dates_and_crates_left": [],
                 "geo_region": userInfo.geo_region,
+                "header":userInfo.header
             }
             for i in pickupInfo or [None]:
                 if i.active == True:

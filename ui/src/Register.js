@@ -21,6 +21,7 @@ export default class Register extends React.Component {
       "aftPickup": false,
       "evePickup": false,
       "stops_limit": "",
+      "header":"",
     }
 
     this.handleInputChange = this.handleInputChange.bind(this)
@@ -89,6 +90,7 @@ export default class Register extends React.Component {
           "password": this.state.password,
           "geo_region": this.state.geo_region.features[0].geometry,
           "pickup_times": [this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
+          "header": this.state.header,
           // "stops_limit":this.state.stops_limit,
         },
       })
@@ -173,6 +175,12 @@ export default class Register extends React.Component {
               <input type="checkbox" name="evePickup" checked={this.state.evePickup} onChange={this.handleInputChange} />
                     Evening (17:00-20:00)
                   </label>
+            <br />
+            <br />
+            <label>
+              Your header message (optional):
+                <input name="header" type="text" value={this.state.header} onChange={this.handleInputChange} placeholder={`ex."All proceeds go to..."`} />
+            </label>
             <br />
             <br />
             <input type="submit" value="Sign up" />
