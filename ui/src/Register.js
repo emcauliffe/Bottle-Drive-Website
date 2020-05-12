@@ -17,19 +17,14 @@ export default class Register extends React.Component {
       "password": "",
       "password_verify": "",
       "geo_region": "",
-      "pickupDates": [0],
       "mornPickup": false,
       "aftPickup": false,
       "evePickup": false,
-      "crates_limit": "",
       "stops_limit": "",
     }
 
     this.handleInputChange = this.handleInputChange.bind(this)
     this.newRegion = this.newRegion.bind(this)
-    this.handleDateAdded = this.handleDateAdded.bind(this)
-    this.changePickupDate = this.changePickupDate.bind(this)
-    this.removePickupDate = this.removePickupDate.bind(this)
     this.validateInput = this.validateInput.bind(this)
     this.handleNewRegistration = this.handleNewRegistration.bind(this)
   }
@@ -55,32 +50,6 @@ export default class Register extends React.Component {
     }
   }
 
-  handleDateAdded(event) {
-    this.setState({ pickupDates: [...this.state.pickupDates, 0] })
-    event.preventDefault();
-  }
-
-  changePickupDate(event) {
-    const index = event.target.name
-    let newPickupDates = [...this.state.pickupDates]
-    newPickupDates[index] = event.target.value
-
-    this.setState({
-      pickupDates: newPickupDates
-    })
-  }
-
-  removePickupDate(event) {
-    const index = event.target.name
-    let newPickupDates = [...this.state.pickupDates]
-    newPickupDates[index] = null
-
-    this.setState({
-      pickupDates: newPickupDates
-    })
-    event.preventDefault();
-  }
-
   validateInput() {
     let alerts = []
     if (this.state.email)
@@ -93,14 +62,8 @@ export default class Register extends React.Component {
     if (this.state.geo_region === "" && this.state.geo_region.features === "") {
       alerts.push("Please draw a collection region")
     }
-    if (this.state.crates_limit < 1) {
-      alerts.push("Maximum number of crates cannot be zero")
-    }
     if (this.state.mornPickup === false && this.state.aftPickup === false && this.state.evePickup === false) {
       alerts.push("Please select a pickup timeslot")
-    }
-    if (new Set(this.state.pickupDates).size !== this.state.pickupDates.length) { //returns true if there are duplicates
-      alerts.push("All dates must be unique")
     }
 
     if (alerts.length > 0) {
@@ -116,13 +79,6 @@ export default class Register extends React.Component {
   handleNewRegistration(event) {
     if (this.validateInput() === true) {
 
-      let onlyDates = [] //remove any null dates from state
-      this.state.pickupDates.map(i => {
-        if (i !== null) {
-          onlyDates.push(i)
-        }
-      })
-
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
@@ -133,10 +89,8 @@ export default class Register extends React.Component {
           "password": this.state.password,
           "geo_region": this.state.geo_region.features[0].geometry,
           "pickup_times": [this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
-          "default_crates_limit": this.state.crates_limit,
           // "stops_limit":this.state.stops_limit,
         },
-        "days": onlyDates,
       })
 
       var requestOptions = {
@@ -203,19 +157,6 @@ export default class Register extends React.Component {
             <br />
             <Map newRegion={this.newRegion} width="100%" height="400px" />
             <br />
-            <br />
-            <label>
-              Max. crates collected per week:
-                    <input name="crates_limit" type="number" value={this.state.crates_limit} onChange={this.handleInputChange} required />
-            </label>
-            <br />
-            <br />
-            <label>Pick your collection dates:</label>
-            <br />
-            <NumberList numbers={this.state.pickupDates} updateDate={this.changePickupDate} deleteDate={this.removePickupDate} />
-            <button onClick={this.handleDateAdded}>Add another date</button>
-            <br />
-            <br />
             <label>Pick your collection Times:</label>
             <br />
             <label>
@@ -242,26 +183,6 @@ export default class Register extends React.Component {
       </div>
     )
   }
-}
-
-function NumberList(props) {
-  const numbers = props.numbers;
-  let index = -1;
-  const listItems = numbers.map(number => {
-    index++;
-    if (number !== null) {//indexes with null value have been deleted and will not be shown
-      if (index === 0) { //can't delete the first day
-        return <li key={index}><input type="date" placeholder="yyyy-mm-dd" pattern="((18|19|20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(18|19|20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(18|19|20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((18|19|20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29" name={index} onChange={props.updateDate} required /></li>
-      } else { //other days have a delete button
-        return <li key={index}><input type="date" placeholder="yyyy-mm-dd" pattern="((18|19|20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(18|19|20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(18|19|20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((18|19|20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29" name={index} onChange={props.updateDate} required /><button name={index} onClick={props.deleteDate}>✕</button></li>
-      }
-    } else {
-      return null;
-    }
-  });
-  return (
-    <ul style={{ listStyleType: "none" }}>{listItems}</ul>
-  );
 }
 
 class Map extends React.Component {

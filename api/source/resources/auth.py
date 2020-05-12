@@ -15,12 +15,6 @@ class RegisterApi(Resource):
         user.hash_password()
         user.generate_link_code()
         user.save()
-        for i in body.get("days"):
-            pickupInfo = PickupInfo(date=i, created_by=user, crates_limit=user["default_crates_limit"], link_code=user["link_code"])
-            pickupInfo.save()
-            user.update(push__drives=pickupInfo)
-        user.save()
-        pickupInfo.save()
         session['userId'] = str(user.id)
         return redirect("/list")
     except FieldDoesNotExist:
