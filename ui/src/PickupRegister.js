@@ -30,6 +30,7 @@ export default class PickupRegister extends React.Component {
             "sixPack": 0,
             "beerBottles": 0,
             "selectedDate": "",
+            "message": "",
             "disabled": true,
             "promptSearch": false,
             "isIn": 2,
@@ -67,7 +68,7 @@ export default class PickupRegister extends React.Component {
             }
             this.setState({ isIn: isIn })
         } catch {
-            this.setState({isIn:1})
+            this.setState({ isIn: 1 })
         }
     }
 
@@ -144,11 +145,15 @@ export default class PickupRegister extends React.Component {
             myHeaders.append("Content-Type", "application/json");
 
             var signupData = JSON.stringify({
-                "name": this.state.name,
-                "homeAddress": this.state.address,
-                "email": this.state.email,
-                "crates": parseInt(this.state.twelvePack) + parseInt(this.state.sixPack) + parseInt(this.state.beerBottles),
+                "details": {
+                    "name": this.state.name,
+                    "homeAddress": this.state.address,
+                    "email": this.state.email,
+                    "crates": parseInt(this.state.twelvePack) + parseInt(this.state.sixPack) + parseInt(this.state.beerBottles),
+                    "message": this.state.message,
+                },
                 "date": this.state.dates_and_crates_left[this.state.selectedDate.split(',')[1]][0],
+                "message": this.state.message,
                 "token": this.state.hCaptcha_token
             })
 
@@ -271,6 +276,11 @@ export default class PickupRegister extends React.Component {
                             max={this.getMaxCrates() - this.state.sixPack - this.state.twelvePack}
                             min={0}
                         />
+                    </label>
+                    <br />
+                    <label hidden={this.state.disabled}>
+                        Message:
+                        <textarea rows={1} name="message" value={this.state.message} onChange={this.handleInputChange} disabled={this.state.disabled} placeholder="optional" />
                     </label>
                     <br />
                     <div hidden={this.state.disabled}>

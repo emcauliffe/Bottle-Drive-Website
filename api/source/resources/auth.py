@@ -11,17 +11,17 @@ class RegisterApi(Resource):
  def post(self):
     try:
         body = request.get_json()
-        user =  User(**body)
+        user =  User(**body.get("details"))
         user.hash_password()
         user.generate_link_code()
         user.save()
-        for i in user.pickup_times.days:
-            pickupInfo = PickupInfo(date=i, created_by=user, crates=0, crates_limit=user["default_crates_limit"], link_code=user["link_code"])
+        for i in body.get("days"):
+            pickupInfo = PickupInfo(date=i, created_by=user, crates_limit=user["default_crates_limit"], link_code=user["link_code"])
             pickupInfo.save()
             user.update(push__drives=pickupInfo)
-        id = [user.id, pickupInfo.id]
         user.save()
         pickupInfo.save()
+        session['userId'] = str(user.id)
         return redirect("/list")
     except FieldDoesNotExist:
         raise SchemaValidationError
@@ -41,8 +41,8 @@ class LoginApi(Resource):
         session['userId'] = str(user.id)
         return redirect("/list")
     except (UnauthorizedError, DoesNotExist):
-        # raise UnauthorizedError
-        abort(401, "Unauthorized")
+        raise UnauthorizedError
+        # abort(401, "Unauthorized")
     except Exception as e:
         raise InternalServerError
 

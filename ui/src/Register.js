@@ -127,16 +127,16 @@ export default class Register extends React.Component {
       myHeaders.append("Content-Type", "application/json");
 
       var signupData = JSON.stringify({
-        "name": this.state.name,
-        "email": this.state.email,
-        "password": this.state.password,
-        "geo_region": this.state.geo_region.features[0].geometry,
-        "pickup_times": {
-          "days": onlyDates,
-          "times": [this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
+        "details": {
+          "name": this.state.name,
+          "email": this.state.email,
+          "password": this.state.password,
+          "geo_region": this.state.geo_region.features[0].geometry,
+          "pickup_times": [this.state.mornPickup, this.state.aftPickup, this.state.evePickup],
+          "default_crates_limit": this.state.crates_limit,
+          // "stops_limit":this.state.stops_limit,
         },
-        "default_crates_limit": this.state.crates_limit,
-        // "stops_limit":this.state.stops_limit
+        "days": onlyDates,
       })
 
       var requestOptions = {
@@ -147,7 +147,13 @@ export default class Register extends React.Component {
       };
 
       fetch("/api/auth/register", requestOptions)
-        .then(response => window.location.replace(response.url))
+        .then(response => {
+          if (response.status === 200) {
+            window.location.replace(response.url)
+          } else {
+            throw new Error()
+          }
+        })
         .catch(error => console.log('error', error));
     }
     event.preventDefault();
@@ -229,6 +235,8 @@ export default class Register extends React.Component {
             <br />
             <br />
             <input type="submit" value="Sign up" />
+            <br />
+            <br />
           </form>
         </header>
       </div>

@@ -17,7 +17,7 @@ class SignupApi(Resource):#for those wanting to get pickup
             userInfo = User.objects.get(id=pickupInfo[0].created_by.id)
             pickupObj = {
                 "drive_name":userInfo.name,
-                "pickup_times": userInfo.pickup_times.times,
+                "pickup_times": userInfo.pickup_times,
                 "dates_and_crates_left": [],
                 "geo_region": userInfo.geo_region,
             }
@@ -39,8 +39,11 @@ class SignupApi(Resource):#for those wanting to get pickup
             if response.json()["success"] == False :
                 raise InvalidTokenError
             pickupInfo = PickupInfo.objects.get(link_code__exact=link_code, date__exact=body["date"], active=True)
-            pickupAddresses = PickupAddresses(homeAddress=body.get("homeAddress"), email=body.get("email"), crates=body.get("crates"), name=body.get("name"))
-            pickupInfo.update(push__addresses=pickupAddresses, inc__crates=body.get("crates"))
+            #must query to determine uniqueness as it is required on a per-date basis
+            if pickupInfo.addresses.filter(homeAddress=body.get("details").get("homeAddress")).count() > 0:
+                raise NotUniqueError
+            pickupAddresses = PickupAddresses(**body.get("details"))
+            pickupInfo.update(push__addresses=pickupAddresses, inc__crates=body.get("details").get("crates"))
             #check if the max number of crates has been reached
             pickupInfo = PickupInfo.objects(id=pickupInfo.id).no_cache()
             if(pickupInfo[0].crates>=pickupInfo[0].crates_limit):
@@ -66,10 +69,10 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
                 pickupInfo = PickupInfo.objects(created_by=user_id).order_by('date')
                 user = User.objects.get(id=user_id)
                 driveInfo = []
+                # print(user.drives)
                 for i in pickupInfo:
                     driveInfo.append({
                         "date": i["date"].strftime("%Y-%m-%d"),
-                        # "addresses": i["addresses"],
                         "crates": i["crates"],
                         "crates_limit": i["crates_limit"],
                         # "stops": i["addresses"].len(),
@@ -134,7 +137,6 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
                 user_id = session['userId']
                 body = request.get_json()
                 pickupInfo = PickupInfo.objects.get(created_by=user_id, date=body.get("date"))
-                # print(pickupInfo.date)
                 user = User.objects.get(id=user_id)
                 driveIndex = user.drives.index(pickupInfo)
                 del user.drives[driveIndex]
@@ -162,7 +164,7 @@ class DownloadAddressesApi(Resource):
                     w = csv.writer(data)
 
                     # write header
-                    w.writerow(('Name', 'Address', "e-mail", "boxes"))
+                    w.writerow(('Name', 'Address', "e-mail", "boxes", "message"))
                     yield data.getvalue()
                     data.seek(0)
                     data.truncate(0)
@@ -172,7 +174,8 @@ class DownloadAddressesApi(Resource):
                             item.name,
                             item.homeAddress,
                             item.email,
-                            item.crates
+                            item.crates,
+                            item.message
                         ))
                         yield data.getvalue()
                         data.seek(0)
