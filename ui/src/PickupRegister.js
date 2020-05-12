@@ -141,10 +141,10 @@ export default class PickupRegister extends React.Component {
         if (this.state.disabled === true) {
             this.setState({ promptSearch: true })
         } else if (this.validateInput() === true) {
-            var myHeaders = new Headers();
+            let myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
 
-            var signupData = JSON.stringify({
+            const signupData = {
                 "details": {
                     "name": this.state.name,
                     "homeAddress": this.state.address,
@@ -155,18 +155,35 @@ export default class PickupRegister extends React.Component {
                 "date": this.state.dates_and_crates_left[this.state.selectedDate.split(',')[1]][0],
                 "message": this.state.message,
                 "token": this.state.hCaptcha_token
-            })
+            }
 
-            var requestOptions = {
+            const requestOptions = {
                 method: 'POST',
                 headers: myHeaders,
-                body: signupData,
+                body: JSON.stringify(signupData),
                 redirect: 'follow',
             };
 
             fetch("/api/" + this.state.link_code, requestOptions)
-                .then(response => response.json())
-                .then(result => console.log(result))
+                .then(response => {
+                    if (response.status === 200) {
+                        const times = ["07:00 (7 a.m.)", "12:00 (noon)", "17:00 (5 p.m.)"]
+                        let i = 0
+                        while (this.state.pickup_times[i] === false){
+                            i++
+                        }
+                        const params = new URLSearchParams({
+                            "date":signupData.date,
+                            "crates":signupData.details.crates,
+                            "address":signupData.details.homeAddress,
+                            "time": times[i],
+                        })
+                        // window.location.replace(response.url)
+                        window.location.replace("/success?"+params.toString())
+                      } else {
+                        throw new Error(response)
+                      }
+                })
                 .catch(error => console.log('error', error));
         }
         event.preventDefault();
