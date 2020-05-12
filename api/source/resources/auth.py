@@ -48,3 +48,10 @@ class LoginApi(Resource):
             return jsonify(False)
     except Exception as e:
         raise InternalServerError
+
+ def delete(self):
+    try:
+        session.pop('userId', None)
+        return 200
+    except Exception as e:
+        raise InternalServerError

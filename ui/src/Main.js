@@ -6,6 +6,7 @@ import Login from './Login';
 import Register from './Register'
 import PickupRegister from './PickupRegister';
 import ViewDrives from "./ViewDrives";
+import Logout from "./Logout"
 
 const Main = () => {
   return (
@@ -13,8 +14,9 @@ const Main = () => {
       {/* <Route exact path='/' component={Home}></Route> */}
       <Route exact path='/signup' component={Register}></Route>
       <Route exact path='/login' component={Login}></Route>
-      <Route exact path='/(\w{5})' component={PickupRegister}></Route>
       <Route exact path='/list' component={ViewDrives}></Route>
+      <Route exact path='/logout' component={Logout}></Route>
+      <Route exact path='/(\w{5})' component={PickupRegister}></Route>
     </Switch>
   );
 }
