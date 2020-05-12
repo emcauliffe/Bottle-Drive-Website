@@ -27,6 +27,7 @@ class User(db.Document):
     password = db.StringField(required=True, min_length=6)
     geo_region = db.PolygonField(required=True)
     pickup_times = db.ListField(db.BooleanField(), required=True)
+    header = db.StringField()
     stops_limit = db.IntField()
     link_code = db.StringField(required=True, unique=True)
     drives = db.ListField(db.ReferenceField('PickupInfo', reverse_delete_rule=db.PULL))
@@ -35,7 +36,7 @@ class User(db.Document):
     def check_password(self, password):
         return check_password_hash(self.password, password)
     def generate_link_code(self):
-        good = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_"
+        good = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
         code = ""
         for i in range(5):
             code += choice(good)
