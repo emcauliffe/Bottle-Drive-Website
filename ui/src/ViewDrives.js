@@ -75,7 +75,7 @@ export default class ViewDrives extends React.Component {
 
     deleteDrive(index) {
 
-        if (window.confirm("Confirm delete drive on " + this.state.drivesArray[index].date + "?")) {
+        if (window.confirm("Confirm delete drive on " + this.state.drivesArray[index].date + "? \nNOTE: DOWNLOAD THE ADDRESSES SPREADSHEET FIRST.")) {
 
             const deleteDate = this.state.drivesArray[index].date
 
