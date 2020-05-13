@@ -48,7 +48,7 @@ errors = {
      },
      "MovieNotExistsError": {
          "message": "Movie with given id doesn't exist",
-         "status": 400
+         "status": 404
      },
      "EmailAlreadyExistsError": {
          "message": "User with given email address already exists",

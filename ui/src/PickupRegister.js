@@ -192,7 +192,13 @@ export default class PickupRegister extends React.Component {
 
     componentDidMount() {
         fetch("/api/" + this.state.link_code)
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 200){
+                    return response.json()
+                } else if (response.status === 404){
+                    window.location.replace("/404")
+                }
+            })
             .then(result => {
                 let center = polylabel(result.geo_region.coordinates)
                 this.setState({ center: [center[1], center[0]], ...result })

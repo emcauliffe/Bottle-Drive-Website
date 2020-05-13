@@ -26,7 +26,7 @@ class SignupApi(Resource):#for those wanting to get pickup
                 if i.active == True:
                     pickupObj["dates_and_crates_left"].append((i["date"].strftime("%Y-%m-%d"), i.crates_limit-i["crates"]))
             return jsonify(pickupObj)
-        except DoesNotExist:
+        except (DoesNotExist, IndexError):
             raise MovieNotExistsError
         except Exception:
             raise InternalServerError
