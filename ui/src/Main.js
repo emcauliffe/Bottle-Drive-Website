@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
 import Login from './Login';
@@ -27,7 +27,6 @@ function Main() {
 }
 
 function NoMatch() {
-  let location = useLocation();
   return (
     <div>
       <h1>
