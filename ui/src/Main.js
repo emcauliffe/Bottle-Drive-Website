@@ -7,12 +7,14 @@ import PickupRegister from './PickupRegister';
 import ViewDrives from "./ViewDrives";
 import Logout from "./Logout"
 import PickupConfirmation from "./PickupConfirmation";
+import LocationSearch from "./LocationSearch";
 
 function Main() {
   return (
     <BrowserRouter>
       <Switch> {/* The Switch decides which component to show based on the current URL.*/}
         <Route exact path='/' component={() => window.location.replace("/home.html")}></Route>
+        <Route exact path='/search' component={LocationSearch}></Route>
         <Route exact path='/signup' component={Register}></Route>
         <Route exact path='/login' component={Login}></Route>
         <Route exact path='/list' component={ViewDrives}></Route>

@@ -191,3 +191,19 @@ class DownloadAddressesApi(Resource):
                 raise InternalServerError
         else:
             abort(403, "unauthorized")
+
+class SearchForDrivesApi(Resource):
+    def get(self):
+        try:
+            loc = [float(request.args.get("long")) , float(request.args.get("lat"))]
+            drives = User.objects(geo_region__geo_intersects=loc, drives__not__size=0)
+            driveList = []
+            for i in drives or [None]:
+                driveList.append({
+                    "name":i["name"],
+                    "link_code":i["link_code"],
+                    "header":i["header"],
+                })
+            return(jsonify(driveList))
+        except Exception as e:
+            raise InternalServerError

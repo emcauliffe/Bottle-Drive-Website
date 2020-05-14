@@ -40,16 +40,30 @@
     <!-- Page Content -->
     <div class="w3-main w3-padding-large" style="margin-left:40%">
 
+        <div class="w3-right">
+            <a href="/signup" class="w3-button w3-light-grey w3-padding-large w3-margin-top">
+                Start your own bottle drive!
+            </a>
+
+            <a href="/login" class="w3-button w3-light-grey w3-padding-large w3-margin-top">
+                <i class="fa fa-lock w3-hover-opacity"></i> Your Drives
+            </a>
+        </div>
         <!-- Header -->
         <header class="w3-container w3-center" style="padding:128px 16px" id="home">
             <h1 class="w3-jumbo"><b>Bottles Against COVID-19</b></h1>
+            <div class="w3-bar">
+                <button id="locSearch" onClick="locationSearch()"
+                    class="w3-button w3-light-grey w3-margin-right w3-bar-item">
+                    <i class="fa fa-location-arrow"></i> Search
+                </button>
+                <input id="postalCode" class="w3-input w3-border w3-bar-item w3-round-large" type="text">
+                <button onClick="postalSearch()" class="w3-button w3-light-grey w3-margin-left w3-bar-item">
+                    Search with postal code
+                </button>
+            </div>
 
-            <!-- <a href="/login" class="w3-button w3-light-grey w3-padding-large w3-margin-top">
-                Login
-            </a>
-            <a href="/signup" class="w3-button w3-light-grey w3-padding-large w3-margin-top">
-                Signup
-            </a> -->
+
         </header>
 
         <!-- About Section -->
@@ -79,7 +93,8 @@
                 stay up to
                 date on our progress!
                 If you do not have any bottles to donate, please feel free to make your own donation towards St. Joe's
-                using <a href="https://secure3.convio.net/stjoca/site/SPageNavigator/westendheroes_home.html">this link</a> :)
+                using <a href="https://secure3.convio.net/stjoca/site/SPageNavigator/westendheroes_home.html">this
+                    link</a> :)
             </p>
 
 
@@ -112,5 +127,32 @@
     </div>
 
 </body>
+
+<script>
+    function locationSearch() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(result => searchDatabase([result.coords.longitude, result.coords.latitude]), (error) => document.getElementById("locSearch").disabled = true)
+        }
+    }
+
+    function postalSearch() {
+        const postalCode = document.getElementById("postalCode").value
+
+        fetch("http://geogratis.gc.ca/services/geolocation/en/locate?q=" + postalCode.slice(0, 3))
+            .then(result => result.json())
+            .then(value => searchDatabase(value[0].geometry.coordinates, true))
+            .catch(error => console.log(error))
+    }
+
+    function searchDatabase(longLatArray, postal) {
+        postal = postal || false
+        const query = {
+            "lat": longLatArray[1],
+            "long": longLatArray[0],
+            "postal": postal
+        }
+        window.location.replace(`/search?lat=${query.lat}&long=${query.long}&postal=${postal}`)
+    }
+</script>
 
 </html>
