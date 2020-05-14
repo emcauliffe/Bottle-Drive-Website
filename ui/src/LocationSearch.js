@@ -21,7 +21,7 @@ export default class LocationSearch extends React.Component {
         return (
             <div>
                 <h1>Drives near you:</h1>
-                <p hidden={this.state.query.postal}>Note: search by postal address is less accurate. Drives listed here may not be in your region.</p>
+                <p hidden={this.state.query.postal === 'false'}>Note: search by postal address is less accurate. Drives listed here may not be in your region.</p>
                 <DriveCards drivesArray={this.state.response} />
             </div>
         )
@@ -32,7 +32,7 @@ function DriveCards(props) {
 
     let cards = []
 
-    if (props.drivesArray.len > 0) {
+    if (props.drivesArray.length > 0) {
         cards = props.drivesArray.map((elem, i) => {
             return (
                 <a href={`/${elem.link_code}`} key={i}>
@@ -43,7 +43,7 @@ function DriveCards(props) {
         })
     } else {
         cards.push(
-            <div>
+            <div key={1}>
                 <h2>Sorry! There are no drives currently running in your area.</h2>
                 <a href="/signup">Start one today!</a>
             </div>
