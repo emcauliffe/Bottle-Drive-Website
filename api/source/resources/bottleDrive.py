@@ -13,7 +13,7 @@ from ..database.models import User, PickupInfo, PickupAddresses
 class SignupApi(Resource):#for those wanting to get pickup
     def get(self, link_code):
         try:
-            pickupInfo = PickupInfo.objects(link_code__exact=link_code).order_by('date')
+            pickupInfo = PickupInfo.objects(link_code__exact=link_code, date__gte=datetime.now()).order_by('date')
             userInfo = User.objects.get(id=pickupInfo[0].created_by.id)
             pickupObj = {
                 "drive_name":userInfo.name,
