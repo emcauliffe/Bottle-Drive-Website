@@ -64,29 +64,26 @@ export default class Login extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <p>
-            Login:
-                </p>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90vh", width: "100vw" }}>
+        <div className="login-card">
+          <h2 style={{ margin: 0, marginBottom: "1em" }}>Login</h2>
           <form onSubmit={this.handleLoginSubmit}>
-            <label>
-              email:
-                    <input name="email" type="email" value={this.state.email} onChange={this.handleInputChange} />
-            </label>
+            <input name="email" type="email" value={this.state.email} onChange={this.handleInputChange} placeholder="email" />
             <br />
             <br />
-            <label>
-              password:
-                    <input name="password" type="password" value={this.state.password} onChange={this.handleInputChange} />
-            </label>
+            <input name="password" type="password" value={this.state.password} onChange={this.handleInputChange} placeholder="password" />
             <br />
             <br />
-            <input type="submit" value="Login" />
+            <input type="submit" value="Login" style={{ backgroundColor: "white", border:"none", padding: "1em", borderRadius: "5px", fontWeight: "light" }} />
           </form>
-          <p hidden={!this.state.unauthorized}>Invalid username or password.</p>
-          <p><a href="/signup">Click here to sign up.</a></p>
-        </header>
+        </div>
+        <div hidden={!this.state.unauthorized} className="login-card alert" style={{ backgroundColor: "red" }}>
+          <p className="closebtn" onClick={() => this.setState({unauthorized:false})}>×</p>
+          <p>Invalid username or password.</p>
+        </div>
+        <div>
+          <p><a href="/signup">Sign up here</a></p>
+        </div>
       </div>
     );
   }

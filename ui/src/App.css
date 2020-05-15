@@ -1,3 +1,15 @@
+:root {
+  --colour-1: #ff6b35ff;
+  --colour-2: #f7c59fff;
+  --colour-3: #efefd0ff;
+  --colour-4: #004e89ff;
+  --colour-5: #1a659eff;
+}
+
+body {
+  background-color: white;
+}
+
 .App {
   text-align: center;
 }
@@ -7,15 +19,16 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+/* @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
+} */
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: var(--colour-5);
+  /* background-color: #282c34; */
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,11 +41,72 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
+/* @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
+} */
+
+.card {
+  padding: 1em;
+  width: 85vw;
+  margin:auto;
+  margin-top: 1em;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  border-radius: 5px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+ /* The alert message box */
+ .alert {
+  padding: 20px;
+  background-color: #ff990070; /* ff9800 */
+  color: black;
+  margin-bottom: 15px;
+}
+
+/* The close button */
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
+} 
+
+.Pickup-Region-Map{
+  width: 95vw;
+  margin: auto;
+  margin-top: 1em;
+}
+
+.login-card {
+  background-color: var(--colour-5);
+  color: white;
+  padding: 2em;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 5px;
+  margin:1em;
+  align-content: flex-start;
+}
+
+input[type=text], [type=password], [type=email] {
+  border: none;
+  padding: 1em;
+  border-radius: 5px;
 }

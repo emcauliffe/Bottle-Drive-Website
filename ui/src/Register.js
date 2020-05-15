@@ -126,30 +126,30 @@ export default class Register extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <p>
-            Register to create a bottle drive:
-                </p>
+          <h1>Create your own bottle drive</h1>
+        </header>
+        <div>
           <form onSubmit={this.handleNewRegistration}>
             <label>
-              Your name:
-                <input name="name" type="text" value={this.state.name} onChange={this.handleInputChange} required />
+              {/* Your name: */}
+                <input name="name" type="text" placeholder="Your name"value={this.state.name} onChange={this.handleInputChange} required />
             </label>
             <br />
             <br />
             <label>
-              email:
-                    <input name="email" type="email" value={this.state.email} onChange={this.handleInputChange} required />
+              {/* email: */}
+                    <input name="email" type="email" placeholder="Your email" value={this.state.email} onChange={this.handleInputChange} required />
             </label>
             <br />
             <br />
             <label>
-              create password:
-                    <input name="password" type="password" value={this.state.password} onChange={this.handleInputChange} required />
+              {/* create password: */}
+                    <input name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleInputChange} required />
             </label>
             <br />
             <label>
-              verify password:
-                    <input name="password_verify" type="password" value={this.state.password_verify} onChange={this.handleInputChange} required />
+              {/* verify password: */}
+                    <input name="password_verify" type="password" placeholder="Verify password" value={this.state.password_verify} onChange={this.handleInputChange} required />
             </label>
             <br />
             <br />
@@ -187,7 +187,7 @@ export default class Register extends React.Component {
             <br />
             <br />
           </form>
-        </header>
+        </div>
       </div>
     )
   }
