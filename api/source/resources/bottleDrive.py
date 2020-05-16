@@ -93,6 +93,8 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
             try:
                 user_id = session['userId']
                 body = request.get_json()
+                if datetime.strptime(body["date"], "%Y-%m-%d") < datetime.now():
+                    raise ValidationError
                 user = User.objects.get(id=user_id)
                 pickupInfo =  PickupInfo(**body, created_by=user, active=True, link_code=user.link_code )
                 pickupInfo.save()
