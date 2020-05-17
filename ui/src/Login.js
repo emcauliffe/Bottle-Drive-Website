@@ -68,17 +68,17 @@ export default class Login extends React.Component {
         <div className="login-card">
           <h2 style={{ margin: 0, marginBottom: "1em" }}>Login</h2>
           <form onSubmit={this.handleLoginSubmit}>
-            <input name="email" type="email" value={this.state.email} onChange={this.handleInputChange} placeholder="email" />
+            <input className="login-input" name="email" type="email" value={this.state.email} onChange={this.handleInputChange} placeholder="email" />
             <br />
             <br />
-            <input name="password" type="password" value={this.state.password} onChange={this.handleInputChange} placeholder="password" />
+            <input className="login-input" name="password" type="password" value={this.state.password} onChange={this.handleInputChange} placeholder="password" />
             <br />
             <br />
-            <input type="submit" value="Login" style={{ backgroundColor: "white", border:"none", padding: "1em", borderRadius: "5px", fontWeight: "light" }} />
+            <input type="submit" value="Login" />
           </form>
         </div>
         <div hidden={!this.state.unauthorized} className="login-card alert" style={{ backgroundColor: "red" }}>
-          <p className="closebtn" onClick={() => this.setState({unauthorized:false})}>×</p>
+          <p className="closebtn" onClick={() => this.setState({ unauthorized: false })}>×</p>
           <p>Invalid username or password.</p>
         </div>
         <div>

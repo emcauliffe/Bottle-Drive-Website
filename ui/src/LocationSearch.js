@@ -22,9 +22,9 @@ export default class LocationSearch extends React.Component {
         return (
             <div>
                 <header className="App-header">
-                    <h1>Drives near you:</h1>
+                    <h1>Bottle drives near you:</h1>
                 </header>
-                <div style={{pointerEvents:"none"}} className="alert card" hidden={this.state.query.postal === 'false'}>
+                <div style={{ pointerEvents: "none" }} className="alert card" hidden={this.state.query.postal === 'false'}>
                     <p><b>Note:</b> search by postal address is less accurate. Drives listed here may not be in your region.</p>
                 </div>
                 <DriveCards drivesArray={this.state.response} />
@@ -40,7 +40,7 @@ function DriveCards(props) {
     if (props.drivesArray.length > 0) {
         cards = props.drivesArray.map((elem, i) => {
             return (
-                <a style={{textDecoration: "none"}} href={`/${elem.link_code}`} key={i}>
+                <a style={{ textDecoration: "none" }} href={`/${elem.link_code}`} key={i}>
                     <div className="card">
                         <h2>{elem.name}'s Bottle drive</h2>
                         <p>{elem.header}</p>

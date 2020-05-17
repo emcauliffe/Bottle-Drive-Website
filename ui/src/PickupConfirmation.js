@@ -15,7 +15,7 @@ export default class PickupConfirmation extends React.Component {
                 <header className="App-header">
                 <h1>Success!</h1>
                 </header>
-                <div className="card" style={{pointerEvents:"none"}}>
+                <div className="card">
                 <p>You're registered for pickup of {this.state.crates} box(es) at {this.state.address} on {this.state.date}.</p>
                 <p>Please have your boxes out by {this.state.time}. Thank you for your support!</p>
                 <a href="/faq.html">Check out or FAQ for more information.</a>
