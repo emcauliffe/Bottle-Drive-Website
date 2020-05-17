@@ -170,20 +170,21 @@ export default class PickupRegister extends React.Component {
                     if (response.status === 200) {
                         const times = ["07:00 (7 a.m.)", "12:00 (noon)", "17:00 (5 p.m.)"]
                         let i = 0
-                        while (this.state.pickup_times[i] === false){
+                        while (this.state.pickup_times[i] === false) {
                             i++
                         }
                         const params = new URLSearchParams({
-                            "date":signupData.date,
-                            "crates":signupData.details.crates,
-                            "address":signupData.details.homeAddress,
+                            "date": signupData.date,
+                            "crates": signupData.details.crates,
+                            "address": signupData.details.homeAddress,
                             "time": times[i],
                         })
-                        // window.location.replace(response.url)
-                        window.location.replace("/success?"+params.toString())
-                      } else {
+                        window.location.assign("/success?" + params.toString())
+                    } else if (response.status === 400) {
+                        alert("Thank you, but this address is already signed up at this date")
+                    } else {
                         throw new Error(response)
-                      }
+                    }
                 })
                 .catch(error => console.log('error', error));
         }
@@ -193,9 +194,9 @@ export default class PickupRegister extends React.Component {
     componentDidMount() {
         fetch("/api/" + this.state.link_code)
             .then(response => {
-                if (response.status === 200){
+                if (response.status === 200) {
                     return response.json()
-                } else if (response.status === 404){
+                } else if (response.status === 404) {
                     window.location.replace("/404")
                 }
             })
@@ -209,109 +210,128 @@ export default class PickupRegister extends React.Component {
     render() {
         return (
             <div>
-                <h1>{this.state.drive_name}'s Bottle Drive</h1>
-                {this.state.header !=="" && <h3>{this.state.header}</h3>}
-                <p>Pickup Region:</p>
-                <Map provider={mapTilerProvider}
-                    dprs={[1, 2]}
-                    center={this.state.center}
-                    zoom={12}
-                    // width={500}
-                    height={400}
-                >
-                    <Marker anchor={this.state.address_latLong} />
-                    <Polygon coordsArray={this.state.geo_region.coordinates[0]} />
-                </Map>
-                {this.state.dates_and_crates_left.length === 0 ? <p>Sorry! There are no more dates with available collection capacity.<br />Check again soon to see if any open up.</p> : <p>Pickups are in the {this.pickupTimeString()}.</p>}
-                <form hidden={this.state.dates_and_crates_left.length === 0} onSubmit={this.onSubmit}>
-                    <label>
+                <header className="App-header" style={{ margin: 0 }}>
+                    <h1>{this.state.drive_name}'s Bottle Drive</h1>
+                </header>
+                <h2 className="pickup-signup-subheader" hidden={this.state.header === ""}>{this.state.header}</h2>
+                <div className="Pickup-Region-Map">
+                    <p>Pickup Region:</p>
+                    <Map provider={mapTilerProvider}
+                        dprs={[1, 2]}
+                        center={this.state.center}
+                        zoom={12}
+                        height={400}
+                        metaWheelZoom={true}
+                        twoFingerDrag={true}
+                    >
+                        <Marker anchor={this.state.address_latLong} />
+                        <Polygon coordsArray={this.state.geo_region.coordinates[0]} colour="var(--colour-2)" />
+                    </Map>
+                </div>
+                {this.state.dates_and_crates_left.length === 0 ? <p className="card alert">Sorry! There are no more signup dates available.<br />Check again soon to see if any open up.</p> : <p style={{ fontWeight: "bold" }}>Pickups are in the {this.pickupTimeString()}.</p>}
+                <form onSubmit={(event) => { event.preventDefault(); this.setState({ promptSearch: true }) }}>
+                    <div hidden={this.state.dates_and_crates_left.length === 0 || !this.state.disabled}>
                         <Geolookup
                             placeholder="Search for your address"
-                            label="Home Address:"
                             id="address"
                             disableAutoLookup={true}
                             onSuggestsLookup={onSuggestsLookup}
                             onGeocodeSuggest={onGeocodeSuggest}
                             getSuggestLabel={getSuggestLabel}
                             ref={el => this._geoSuggest = el}
+                            types={["geocode"]}
                             autoActivateFirstSuggest={true}
-                            style={{ 'suggests': { "margin": 0, "visibility": "hidden", "maxHeight": 0, "overflow": "hidden", "borderWidth": 0 } }}
+                            style={{
+                                'input': { border: "black solid 1px", borderRadius: "5px", padding: "1em", marginRight: "1em" },
+                                'suggests': { "margin": 0, "visibility": "hidden", "maxHeight": 0, "overflow": "hidden", "borderWidth": 0 },
+                                'suggestItem': { border: "none" },
+                            }}
                             onActivateSuggest={this.addressSelected}
                         />
-                    </label>
-                    <p hidden={!this.state.promptSearch}>Please click search.</p>
-                    <p hidden={this.state.isIn !== 1}>Sorry! You're not in our pickup area.<br />If this sounds wrong, try adding the more detail to your search ex. "123 Random St, Etobicoke".<br />The detected address will automatically appear on the map.</p>
-                    <label hidden={this.state.disabled}>
-                        Name:
-                        <input type="text" name="name" value={this.state.name} onChange={this.handleInputChange} disabled={this.state.disabled} required />
-                    </label>
-                    <br />
-                    <label hidden={this.state.disabled}>
-                        email:
-                        <input type="email" name="email" value={this.state.email} onChange={this.handleInputChange} disabled={this.state.disabled} required />
-                    </label>
-                    <br />
-                    <label hidden={this.state.disabled}>
-                        Pickup Date:
-                        <DatesSelect
-                            options={this.state.dates_and_crates_left.map(i => new Date(i[0]))}
-                            onChange={this.handleInputChange}
-                            value={this.state.selectedDate}
-                            name="selectedDate"
-                            placeholder={"Select a date:"}
-                            disabled={this.state.disabled}
-                        />
-                    </label>
-                    <br />
-                    <p hidden={this.state.selectedDate === ""}>You can have a maximum of {this.getMaxCrates()} box{this.getMaxCrates() > 1 ? "es" : ""} picked up on this date.</p>
-                    <label hidden={this.state.disabled}>
-                        Number of 12 bottle wine boxes:
-                        <input
-                            disabled={this.state.disabled || this.state.selectedDate === ""}
-                            type="number"
-                            name="twelvePack"
-                            value={this.state.twelvePack}
-                            onChange={this.handleInputChange}
-                            max={this.getMaxCrates() - this.state.sixPack - this.state.beerBottles}
-                            min={0}
-                        />
-                    </label>
-                    <br />
-                    <label hidden={this.state.disabled}>
-                        Number of 6 bottle wine boxes:
-                        <input
-                            type="number"
-                            name="sixPack"
-                            value={this.state.sixPack}
-                            onChange={this.handleInputChange}
-                            disabled={this.state.disabled || this.state.selectedDate === ""}
-                            max={this.getMaxCrates() - this.state.twelvePack - this.state.beerBottles}
-                            min={0}
-                        />
-                    </label>
-                    <br />
-                    <label hidden={this.state.disabled}>
-                        Number of 24/28 bottle beer boxes:
-                        <input
-                            type="number"
-                            name="beerBottles"
-                            value={this.state.beerBottles}
-                            onChange={this.handleInputChange}
-                            disabled={this.state.disabled || this.state.selectedDate === ""}
-                            max={this.getMaxCrates() - this.state.sixPack - this.state.twelvePack}
-                            min={0}
-                        />
-                    </label>
-                    <br />
-                    <label hidden={this.state.disabled}>
-                        Message:
-                        <textarea rows={1} name="message" value={this.state.message} onChange={this.handleInputChange} disabled={this.state.disabled} placeholder="optional" />
-                    </label>
-                    <br />
-                    <div hidden={this.state.disabled}>
-                        <HCaptcha sitekey="aca48aca-c9cd-472d-ba6b-02eee619baf9" onVerify={this.onVerifyCaptcha} disabled={this.state.disabled} />
                     </div>
-                    <input hidden={this.state.disabled} type="submit" value="Register" size="compact" />
+                </form>
+                <div className="alert card" hidden={!this.state.promptSearch}>
+                    <p>Please click search.</p>
+                </div>
+                <div className="alert card" hidden={this.state.isIn !== 1}>
+                    <p><b>Sorry! You're not in our pickup area.</b><br />If this sounds wrong, try adding the more detail to your search ex. "123 Random St, Etobicoke".<br />The detected address will automatically appear on the map.</p>
+                </div>
+                <form onSubmit={this.onSubmit}>
+                    <div hidden={this.state.disabled} className="card">
+                        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                            <p style={{ margin: "1em" }}>{this.state.address} <input type="button" value="×" style={{ background: "white", color: "red", border: "red solid 1px", borderRadius: "5px", cursor: "pointer", padding: "0.3em" }} onClick={(event) => { this.setState({ disabled: true, address: "", promptSearch: false }, this._geoSuggest.clear) }} /></p>
+                            <input className="pickup-signup-input" placeholder="Your name" type="text" name="name" value={this.state.name} onChange={this.handleInputChange} disabled={this.state.disabled} required />
+                            <input className="pickup-signup-input" placeholder="Your email" type="email" name="email" value={this.state.email} onChange={this.handleInputChange} disabled={this.state.disabled} required />
+                            <DatesSelect
+                                options={this.state.dates_and_crates_left.map(i => new Date(i[0]))}
+                                onChange={this.handleInputChange}
+                                value={this.state.selectedDate}
+                                name="selectedDate"
+                                placeholder="Select pickup date:"
+                                className="pickup-signup-input"
+                            />
+                        </div>
+                        <br />
+                        <div hidden={this.state.selectedDate === ""}>
+                            <p className="alert">You can have a maximum of <b>{this.getMaxCrates()} box{this.getMaxCrates() > 1 ? "es" : ""}</b> picked up on this date.</p>
+                            <p className="alert"><b>Only bottles in wine or beer bottle boxes will be picked up.</b> <a href="/faq">Check our FAQ for more details.</a></p>
+                            <table style={{ textAlign: "right", margin: "auto" }}>
+                                <tr>
+                                    <td>Number of 12 bottle wine/spirit boxes:</td>
+                                    <td>
+                                        <input
+                                            disabled={this.state.selectedDate === ""}
+                                            type="number"
+                                            name="twelvePack"
+                                            value={this.state.twelvePack}
+                                            onChange={this.handleInputChange}
+                                            max={this.getMaxCrates() - this.state.sixPack - this.state.beerBottles}
+                                            min={0}
+                                            className="pickup-signup-input"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Number of 6 bottle wine/spirit boxes:</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="sixPack"
+                                            value={this.state.sixPack}
+                                            onChange={this.handleInputChange}
+                                            disabled={this.state.selectedDate === ""}
+                                            max={this.getMaxCrates() - this.state.twelvePack - this.state.beerBottles}
+                                            min={0}
+                                            className="pickup-signup-input"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Number of 24/28 bottle beer boxes:</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="beerBottles"
+                                            value={this.state.beerBottles}
+                                            onChange={this.handleInputChange}
+                                            disabled={this.state.selectedDate === ""}
+                                            max={this.getMaxCrates() - this.state.sixPack - this.state.twelvePack}
+                                            min={0}
+                                            className="pickup-signup-input"
+                                        />
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                                <label> Message: </label>
+                                <textarea className="pickup-signup-input" rows={1} name="message" value={this.state.message} onChange={this.handleInputChange} placeholder="optional" />
+                            </div>
+                            <div style={{ margin: "1em" }}>
+                                <HCaptcha sitekey="aca48aca-c9cd-472d-ba6b-02eee619baf9" onVerify={this.onVerifyCaptcha} />
+                            </div>
+                            <input type="submit" value="Register" />
+                        </div>
+                    </div>
                     <br />
                     <br />
                 </form>
@@ -324,7 +344,7 @@ function mapTilerProvider(x, y, z, dpr) {
     return `https://a.tile.openstreetmap.org/${z}/${x}/${y}.png`
 }
 
-function Polygon({ mapState: { width, height }, latLngToPixel, coordsArray }) {
+function Polygon({ mapState: { width, height }, latLngToPixel, coordsArray, colour }) {
 
     let coords = ""
 
@@ -334,7 +354,7 @@ function Polygon({ mapState: { width, height }, latLngToPixel, coordsArray }) {
     }
 
     return (
-        <svg width={width} height={height} style={{ fill: "#51EDFF", opacity: 0.4, top: 0, left: 0 }}>
+        <svg width={width} height={height} style={{ fill: colour, opacity: 0.4, top: 0, left: 0 }}>
             <polygon points={coords} />
         </svg>
     )
@@ -351,7 +371,7 @@ function DatesSelect(props) {
     })
 
     return (
-        <select defaultValue={props.placeholder} name={props.name} onChange={props.onChange} disabled={props.disabled}>
+        <select style={props.style} className={props.className} defaultValue={props.placeholder} name={props.name} onChange={props.onChange} disabled={props.disabled} required>
             {props.placeholder ? <option value={props.placeholder} disabled>{props.placeholder}</option> : null}
             {selectOptions}
         </select>

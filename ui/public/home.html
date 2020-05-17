@@ -52,15 +52,17 @@
         <!-- Header -->
         <header class="w3-container w3-center" style="padding:64px 16px" id="home">
             <h1 class="w3-jumbo"><b>Bottles Against COVID-19</b></h1>
-            <p>Find drives nearby:</p>
-            <div class="w3-bar w3-mobile">
+            <p>Find bottle drives nearby:</p>
+            <div class="w3-container w3-margin-bottom w3-bar">
                 <button id="locSearch" onClick="locationSearch()"
-                    class="w3-button w3-light-grey w3-margin-right w3-bar-item w3-mobile">
-                    <i class="fa fa-location-arrow"></i> Search
+                    class="w3-button w3-light-grey w3-bar-item w3-mobile">
+                    <i class="fa fa-location-arrow"></i> Search by location (most&nbspaccurate)
                 </button>
-                <input id="postalCode" class="w3-input w3-border w3-margin-right w3-bar-item w3-round-large w3-mobile" type="text" placeholder="K1A 0A9">
+            </div>
+            <div class="w3-container w3-margin-top w3-bar">    
+                <input id="postalCode" class="w3-input w3-border w3-round-large w3-bar-item w3-mobile" type="text" placeholder="K1A 0A9">
                 <button onClick="postalSearch()" class="w3-button w3-light-grey w3-bar-item w3-mobile">
-                    Search with postal code
+                    Search by postal code
                 </button>
             </div>
 

@@ -21,7 +21,7 @@ export default class Register extends React.Component {
       "aftPickup": false,
       "evePickup": false,
       "stops_limit": "",
-      "header":"",
+      "header": "",
     }
 
     this.handleInputChange = this.handleInputChange.bind(this)
@@ -53,14 +53,13 @@ export default class Register extends React.Component {
 
   validateInput() {
     let alerts = []
-    if (this.state.email)
-      if (this.state.password.length < 6) {
-        alerts.push("Password too short (min. 6 characters)")
-      }
+    if (this.state.password.length < 6) {
+      alerts.push("Password too short (min. 6 characters)")
+    }
     if (this.state.password !== this.state.password_verify) {
       alerts.push("Passwords do not match")
     }
-    if (this.state.geo_region === "" && this.state.geo_region.features === "") {
+    if (this.state.geo_region === "" || this.state.geo_region.features === "") {
       alerts.push("Please draw a collection region")
     }
     if (this.state.mornPickup === false && this.state.aftPickup === false && this.state.evePickup === false) {
@@ -78,6 +77,7 @@ export default class Register extends React.Component {
   }
 
   handleNewRegistration(event) {
+    event.preventDefault()
     if (this.validateInput() === true) {
 
       var myHeaders = new Headers();
@@ -112,7 +112,6 @@ export default class Register extends React.Component {
         })
         .catch(error => console.log('error', error));
     }
-    event.preventDefault();
   }
 
   componentDidMount() {
@@ -126,68 +125,51 @@ export default class Register extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <p>
-            Register to create a bottle drive:
-                </p>
-          <form onSubmit={this.handleNewRegistration}>
-            <label>
-              Your name:
-                <input name="name" type="text" value={this.state.name} onChange={this.handleInputChange} required />
-            </label>
-            <br />
-            <br />
-            <label>
-              email:
-                    <input name="email" type="email" value={this.state.email} onChange={this.handleInputChange} required />
-            </label>
-            <br />
-            <br />
-            <label>
-              create password:
-                    <input name="password" type="password" value={this.state.password} onChange={this.handleInputChange} required />
-            </label>
-            <br />
-            <label>
-              verify password:
-                    <input name="password_verify" type="password" value={this.state.password_verify} onChange={this.handleInputChange} required />
-            </label>
-            <br />
-            <br />
-            <label>
-              Pickup region:
-            </label>
-            <br />
-            <Map newRegion={this.newRegion} width="100%" height="400px" />
-            <br />
-            <label>Pick your collection Times:</label>
-            <br />
-            <label>
-              <input type="checkbox" name="mornPickup" checked={this.state.mornPickup} onChange={this.handleInputChange} />
-                    Morning (7:00-11:59)
-                  </label>
-            <br />
-            <label>
-              <input type="checkbox" name="aftPickup" checked={this.state.aftPickup} onChange={this.handleInputChange} />
-                    Afternoon (12:00-16:59)
-                  </label>
-            <br />
-            <label>
-              <input type="checkbox" name="evePickup" checked={this.state.evePickup} onChange={this.handleInputChange} />
-                    Evening (17:00-20:00)
-                  </label>
-            <br />
-            <br />
-            <label>
-              Your header message (optional):
-                <input name="header" type="text" value={this.state.header} onChange={this.handleInputChange} placeholder={`ex."All proceeds go to..."`} />
-            </label>
-            <br />
-            <br />
-            <input type="submit" value="Sign up" />
-            <br />
-            <br />
-          </form>
+          <h1>Create your own bottle drive</h1>
         </header>
+        <form onSubmit={this.handleNewRegistration}>
+          <div style={{ display: "flex", flexDirection: "column", flex:"wrap", width: "100%" }}>
+            <div className="signup-section">
+              <div>
+                <input className="pickup-signup-input" name="name" type="text" placeholder="Your name" value={this.state.name} onChange={this.handleInputChange} required />
+                <input className="pickup-signup-input" name="email" type="email" placeholder="Your email" value={this.state.email} onChange={this.handleInputChange} required />
+              </div>
+              <div>
+                <input className="pickup-signup-input" name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleInputChange} required />
+                <input className="pickup-signup-input" name="password_verify" type="password" placeholder="Verify password" value={this.state.password_verify} onChange={this.handleInputChange} required />
+              </div>
+            </div>
+            <div className="signup-section">
+              <div>
+                <Map newRegion={this.newRegion} style={{ width: "100%", height: "400px", margin: "1em", borderRadius: "5px" }} width="100%" height="400px" label="Your pickup region" />
+              </div>
+            </div>
+            <div className="signup-section">
+              <p>Pick your collection times:</p>
+              <table style={{ textAlign: "center", margin: "auto" }}>
+                <tr>
+                  <td>Morning (7:00-11:59)</td>
+                  <td><input className="checkmark" type="checkbox" name="mornPickup" checked={this.state.mornPickup} onChange={this.handleInputChange} /></td>
+                </tr>
+                <tr>
+                  <td>Afternoon (12:00-16:59)</td>
+                  <td><input type="checkbox" name="aftPickup" checked={this.state.aftPickup} onChange={this.handleInputChange} /></td>
+                </tr>
+                <tr>
+                  <td>Evening (17:00-20:00)</td>
+                  <td><input type="checkbox" name="evePickup" checked={this.state.evePickup} onChange={this.handleInputChange} /></td>
+                </tr>
+              </table>
+            </div>
+            <div className="signup-section">
+              <label>
+                Your header message (optional):
+                <input className="pickup-signup-input" name="header" type="text" value={this.state.header} onChange={this.handleInputChange} placeholder={`ex."All proceeds go to..."`} />
+              </label>
+            </div>
+            <input type="submit" value="Sign up" />
+          </div>
+        </form>
       </div>
     )
   }
@@ -221,8 +203,9 @@ class Map extends React.Component {
   render() {
     return (
       <div>
+        <p>{this.props.label}</p>
         <MapGL
-          style={{ width: this.props.width, height: this.props.height }}
+          style={this.props.style}
           onViewportChange={(viewport) => this.setState({ viewport })}
           mapStyle={mapStyle}
           {...this.state.viewport}
@@ -255,6 +238,7 @@ class Map extends React.Component {
             polygonControl={false}
           />
         </MapGL>
+        <p hidden={this.state.mode !== "draw_polygon"}>Click anywhere on the map to start drawing a region.</p>
         <button disabled={this.state.polygon} onClick={(event) => { this.setState({ mode: 'draw_polygon' }); event.preventDefault(); }}>Draw Region</button>
       </div>
     )

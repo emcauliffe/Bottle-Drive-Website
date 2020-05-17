@@ -1,5 +1,6 @@
 import React from 'react';
 import qs from 'qs'
+import './App.css'
 
 export default class LocationSearch extends React.Component {
     constructor(props) {
@@ -20,8 +21,12 @@ export default class LocationSearch extends React.Component {
     render() {
         return (
             <div>
-                <h1>Drives near you:</h1>
-                <p hidden={this.state.query.postal === 'false'}>Note: search by postal address is less accurate. Drives listed here may not be in your region.</p>
+                <header className="App-header">
+                    <h1>Bottle drives near you:</h1>
+                </header>
+                <div style={{ pointerEvents: "none" }} className="alert card" hidden={this.state.query.postal === 'false'}>
+                    <p><b>Note:</b> search by postal address is less accurate. Drives listed here may not be in your region.</p>
+                </div>
                 <DriveCards drivesArray={this.state.response} />
             </div>
         )
@@ -35,9 +40,11 @@ function DriveCards(props) {
     if (props.drivesArray.length > 0) {
         cards = props.drivesArray.map((elem, i) => {
             return (
-                <a href={`/${elem.link_code}`} key={i}>
-                    <h2>{elem.name}'s Bottle drive</h2>
-                    <p>{elem.header}</p>
+                <a style={{ textDecoration: "none" }} href={`/${elem.link_code}`} key={i}>
+                    <div className="card">
+                        <h2>{elem.name}'s Bottle drive</h2>
+                        <p>{elem.header}</p>
+                    </div>
                 </a>
             )
         })
