@@ -129,12 +129,6 @@ body {
   align-content: flex-start;
 }
 
-/* input[type=text], [type=password], [type=email] {
-  border: none;
-  padding: 1em;
-  border-radius: 5px;
-} */
-
 button, input[type=submit] {
   background-color: var(--colour-1);
   border: none;
@@ -149,6 +143,7 @@ button, input[type=submit] {
 button:disabled{
   background-color: var(--colour-5);
   color: grey;
+  cursor: not-allowed;
 }
 
 .login-input {
@@ -173,4 +168,10 @@ button:disabled{
   border-radius: 5px;
   padding: 1em;
   margin: 1em;
+}
+
+.signup-section {
+  padding: 1em;
+  width: 85vw;
+  margin:auto;
 }
