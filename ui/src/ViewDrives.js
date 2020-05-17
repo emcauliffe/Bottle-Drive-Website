@@ -155,6 +155,9 @@ export default class ViewDrives extends React.Component {
                 <button disabled={!this.state.modified} onClick={this.updateDrives}>Save Changes</button>
                 <br />
                 <p>Your shareable link is: <a href={"/" + this.state.link_code}>bottlesagainstcovid.site/{this.state.link_code}</a> <button onClick={() => navigator.clipboard.writeText(`https://bottlesagainstcovid.site/${this.state.link_code}`)}>copy</button></p>
+                <form action="/settings">
+                    <input type="submit" value="Change Settings ⚙️" style={{margin:"1em"}}/>
+                </form>
                 <form action="/logout">
                     <input type="submit" value="Logout" />
                 </form>

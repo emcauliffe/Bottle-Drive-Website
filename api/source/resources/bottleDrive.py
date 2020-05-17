@@ -27,7 +27,24 @@ class SignupApi(Resource):#for those wanting to get pickup
                     pickupObj["dates_and_crates_left"].append((i["date"].strftime("%Y-%m-%d"), i.crates_limit-i["crates"]))
             return jsonify(pickupObj)
         except (DoesNotExist, IndexError):
-            raise MovieNotExistsError
+            try:
+                pickupInfo = PickupInfo.objects(link_code__exact=link_code)
+                if pickupInfo == [None]:
+                    raise DoesNotExist
+                else:
+                    userInfo = User.objects.get(id=pickupInfo[0].created_by.id)
+                    pickupObj = {
+                        "drive_name":userInfo.name,
+                        "pickup_times": userInfo.pickup_times,
+                        "dates_and_crates_left": [],
+                        "geo_region": userInfo.geo_region,
+                        "header":userInfo.header
+                    }
+                    return jsonify(pickupObj)
+            except DoesNotExist:
+                raise MovieNotExistsError
+            except Exception:
+                raise InternalServerError
         except Exception:
             raise InternalServerError
     def post(self, link_code):
@@ -70,7 +87,6 @@ class ListDriveApi(Resource):#to modify a bottle drive instance
                 pickupInfo = PickupInfo.objects(created_by=user_id).order_by('date')
                 user = User.objects.get(id=user_id)
                 driveInfo = []
-                # print(user.drives)
                 for i in pickupInfo:
                     driveInfo.append({
                         "date": i["date"].strftime("%Y-%m-%d"),
@@ -158,7 +174,6 @@ class DownloadAddressesApi(Resource):
         if 'userId' in session:
             try:
                 user_id = session['userId']
-                # print()
                 date = request.args.get('date', '')
                 pickupInfo = PickupInfo.objects.get(created_by=user_id, date=date)
 
@@ -209,3 +224,33 @@ class SearchForDrivesApi(Resource):
             return(jsonify(driveList))
         except Exception as e:
             raise InternalServerError
+
+class UserSettingsApi(Resource):
+    def get(self):
+        if 'userId' in session:
+            user_id = session['userId']
+            user = User.objects.get(id=user_id)
+            userInfo = {
+                "name": user.name,
+                "header": user.header,
+                "pickup_times": user.pickup_times
+            }
+            return jsonify(userInfo)
+        else:
+            abort(403, "unauthorized")
+
+    def put(self):
+        if 'userId' in session:
+            try:
+                user_id = session['userId']
+                user = User.objects.get(id=user_id)
+                body = request.get_json()
+                user.name = body.get("name")
+                user.header = body.get("header")
+                user.pickup_times = body.get("pickup_times")
+                user.save()
+                return 200
+            except Exception as e:
+                raise InternalServerError
+        else:
+            abort(403, "unauthorized")
