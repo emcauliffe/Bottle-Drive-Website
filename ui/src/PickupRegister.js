@@ -83,40 +83,37 @@ export default class PickupRegister extends React.Component {
     }
 
     pickupTimeString() {
-        let output = ""
-        let trueElems = 0
-        this.state.pickup_times.map(i => i === true ? trueElems++ : null)
+        let output = []
         if (this.state.pickup_times[0] === true) {
-            output += "mornings"
-            switch (trueElems) {
-                case 2:
-                    output += " and ";
-                    break;
-                case 3:
-                    output += ", "
-                    break;
-                default:
-                    break;
-            }
+            output.push("mornings")
         }
         if (this.state.pickup_times[1] === true) {
-            output += "afternoons"
-            switch (trueElems) {
-                case 2:
-                    output += " and ";
-                    break;
-                case 3:
-                    output += " and "
-                    break;
-                default:
-                    break;
-            }
+            output.push("afternoons")
+        }
+        if (this.state.pickup_times[2] === true) {
+            output.push("evenings")
         }
 
-        if (this.state.pickup_times[2] === true) {
-            output += "evenings"
+        if (output.length === 2) {
+            output.splice(1, 0, " and ")
+        } else if (output.length === 3) {
+            output.splice(1, 0, ", ")
+            output.splice(3, 0, " and ")
         }
-        return output;
+
+        // switch (output.length) {
+        //     case 2:
+        //         output.splice(1, 0, " and ")
+        //         break;
+        //     case 3:
+        //         output.splice(1, 0, ", ")
+        //         output.splice(3, 0, " and ")
+        //         break;
+        //     default:
+        //         break;
+        // }
+
+        return output.join("");
     }
 
     onVerifyCaptcha(token) {
