@@ -8,6 +8,7 @@ import ViewDrives from "./ViewDrives";
 import Logout from "./Logout"
 import PickupConfirmation from "./PickupConfirmation";
 import LocationSearch from "./LocationSearch";
+import UserSettings from "./UserSettings"
 
 function Main() {
   return (
@@ -18,6 +19,7 @@ function Main() {
         <Route exact path='/signup' component={Register}></Route>
         <Route exact path='/login' component={Login}></Route>
         <Route exact path='/list' component={ViewDrives}></Route>
+        <Route exact path='/settings' component={UserSettings}></Route>
         <Route exact path='/logout' component={Logout}></Route>
         <Route exact path='/success' component={PickupConfirmation}></Route>
         <Route exact path='/faq' component={()=> window.location.replace("/faq.html")}></Route>
