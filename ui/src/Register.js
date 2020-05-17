@@ -141,7 +141,7 @@ export default class Register extends React.Component {
             </div>
             <div className="signup-section">
               <div>
-                <Map newRegion={this.newRegion} style={{ width: "100%", height: "400px", margin: "1em", borderRadius: "5px" }} width="100%" height="400px" label="Pickup Region" />
+                <Map newRegion={this.newRegion} style={{ width: "100%", height: "400px", margin: "1em", borderRadius: "5px" }} width="100%" height="400px" label="Your pickup region" />
               </div>
             </div>
             <div className="signup-section">
@@ -238,6 +238,7 @@ class Map extends React.Component {
             polygonControl={false}
           />
         </MapGL>
+        <p hidden={this.state.mode !== "draw_polygon"}>Click anywhere on the map to start drawing a region.</p>
         <button disabled={this.state.polygon} onClick={(event) => { this.setState({ mode: 'draw_polygon' }); event.preventDefault(); }}>Draw Region</button>
       </div>
     )
