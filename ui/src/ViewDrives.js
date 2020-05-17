@@ -11,7 +11,7 @@ export default class ViewDrives extends React.Component {
                 "crates_limit": ""
             },
             "delete": [],
-            "link_code":""
+            "link_code": ""
         }
 
         this.loadDrives = this.loadDrives.bind(this)
@@ -21,14 +21,14 @@ export default class ViewDrives extends React.Component {
         this.deleteDrive = this.deleteDrive.bind(this)
         this.setNewDrive = this.setNewDrive.bind(this)
         this.sendNewDrive = this.sendNewDrive.bind(this)
-        
+
         this.loadDrives()
     }
 
     loadDrives() {
         fetch("/api/list")
             .then(response => {
-                if (response.status === 403){
+                if (response.status === 403) {
                     window.location.replace("/login")
                 } else if (response.status === 200) {
                     response.json().then(result => this.setState({ drivesArray: result.drives, link_code: result.link_code, modified: false }))
@@ -135,25 +135,26 @@ export default class ViewDrives extends React.Component {
     render() {
         return (
             <div>
-                <h1>Your bottle drives</h1>
-                <DrivesTable
-                    drivesArray={this.state.drivesArray}
-                    newDrive={this.state.newDrive}
-                    headersArray={["Date", "Boxes signed up", "Boxes limit", "Active", "Addresses Spreadsheet", "Add/Delete"]}
-                    changeActive={this.toggleDateActive}
-                    updateLimit={this.updateCrateLimit}
-                    deleteDrive={this.deleteDrive}
-                    setNewDrive={this.setNewDrive}
-                    sendNewDrive={this.sendNewDrive}
-                    style={{
-                        "width": "100%",
-
-                    }}
-                />
+                <header className="App-header" style={{backgroundColor:"var(--colour-3)"}}>
+                    <h1>Your bottle drives</h1>
+                </header>
+                <div style={{ overflowX: "auto" }}>
+                    <DrivesTable
+                        drivesArray={this.state.drivesArray}
+                        newDrive={this.state.newDrive}
+                        headersArray={["Date", "Boxes signed up", "Boxes limit", "Active", "Addresses Spreadsheet", "Add/Delete"]}
+                        changeActive={this.toggleDateActive}
+                        updateLimit={this.updateCrateLimit}
+                        deleteDrive={this.deleteDrive}
+                        setNewDrive={this.setNewDrive}
+                        sendNewDrive={this.sendNewDrive}
+                        style={{ width: "100%", margin: "auto", marginTop: "1em", marginBottom: "1em" }}
+                    />
+                </div>
                 <button disabled={!this.state.modified} onClick={this.loadDrives}>Undo Changes</button>
                 <button disabled={!this.state.modified} onClick={this.updateDrives}>Save Changes</button>
                 <br />
-                <p>Your shareable link is: <a href={"/"+this.state.link_code}>bottlesagainstcovid.site/{this.state.link_code}</a> <button onClick={()=>navigator.clipboard.writeText(`https://bottlesagainstcovid.site/${this.state.link_code}`)}>copy</button></p>
+                <p>Your shareable link is: <a href={"/" + this.state.link_code}>bottlesagainstcovid.site/{this.state.link_code}</a> <button onClick={() => navigator.clipboard.writeText(`https://bottlesagainstcovid.site/${this.state.link_code}`)}>copy</button></p>
                 <form action="/logout">
                     <input type="submit" value="Logout" />
                 </form>
@@ -170,18 +171,17 @@ function DrivesTable(props) {
             <tr key={i}>
                 <td>{daysOfWeek[dateObj.getUTCDay()]}, {monthsOfYear[dateObj.getUTCMonth()]} {dateObj.getUTCDate()}, {dateObj.getUTCFullYear()}</td>
                 <td>{elem.crates}</td>
-                <td><input type="number" value={elem.crates_limit} name={i} min={elem.crates >= 1 ? elem.crates : 1} onChange={props.updateLimit} /></td>
-                {/* <td>{elem.crates_limit}</td> */}
+                <td><input className="pickup-signup-input" type="number" value={elem.crates_limit} name={i} min={elem.crates >= 1 ? elem.crates : 1} onChange={props.updateLimit} /></td>
                 <td><input type="checkbox" checked={elem.active} onChange={props.changeActive} name={i} disabled={elem.crates >= elem.crates_limit} /></td>
-                <td><a href={"/api/download?date=" + elem.date} style={{textDecoration: "none"}} target="_blank" rel="noopener noreferrer"><span role="img" aria-label="click to download">⬇️</span></a></td>
-                <td><span role="img" aria-label="click to delete" style={{cursor:"pointer"}} onClick={() => props.deleteDrive(i)}>❌</span></td>
+                <td><a href={"/api/download?date=" + elem.date} style={{ textDecoration: "none" }} target="_blank" rel="noopener noreferrer"><span role="img" aria-label="click to download">⬇️</span></a></td>
+                <td><span role="img" aria-label="click to delete" style={{ cursor: "pointer" }} onClick={() => props.deleteDrive(i)}>❌</span></td>
             </tr>
         )
     })
 
     let headers = props.headersArray.map((elem, i) => {
         return (
-            <td key={i} >{elem}</td>
+            <td key={i} style={{ fontWeight: "bold", textDecoration: "underline" }}>{elem}</td>
         )
     })
 
@@ -195,13 +195,12 @@ function DrivesTable(props) {
             <tbody>
                 {body}
                 <tr>
-                    <td><input type="date" name="date" value={props.newDrive.date} onChange={props.setNewDrive} /></td>
+                    <td><input className="pickup-signup-input" type="date" name="date" value={props.newDrive.date} onChange={props.setNewDrive} placeholder="yyyy-mm-dd" /></td>
                     <td>--</td>
-                    <td><input type="number" name="crates_limit" min={1} value={props.newDrive.crates_limit} onChange={props.setNewDrive} /></td>
+                    <td><input className="pickup-signup-input" type="number" name="crates_limit" min={1} value={props.newDrive.crates_limit} onChange={props.setNewDrive} /></td>
                     <td>--</td>
-                    {/* <td><input type="checkbox" /></td> */}
                     <td>--</td>
-                    <td><span role="img" aria-label="click to add" style={{cursor:"pointer"}} onClick={props.sendNewDrive}>➕</span></td>
+                    <td><span role="img" aria-label="click to add" style={{ cursor: "pointer" }} onClick={props.sendNewDrive}>➕</span></td>
                 </tr>
             </tbody>
         </table>
