@@ -101,18 +101,6 @@ export default class PickupRegister extends React.Component {
             output.splice(3, 0, " and ")
         }
 
-        // switch (output.length) {
-        //     case 2:
-        //         output.splice(1, 0, " and ")
-        //         break;
-        //     case 3:
-        //         output.splice(1, 0, ", ")
-        //         output.splice(3, 0, " and ")
-        //         break;
-        //     default:
-        //         break;
-        // }
-
         return output.join("");
     }
 
