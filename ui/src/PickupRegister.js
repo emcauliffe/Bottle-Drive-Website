@@ -312,7 +312,7 @@ export default class PickupRegister extends React.Component {
                                 <textarea className="pickup-signup-input" rows={1} name="message" value={this.state.message} onChange={this.handleInputChange} placeholder="optional" />
                             </div>
                             <div style={{ margin: "1em" }}>
-                                <HCaptcha sitekey="aca48aca-c9cd-472d-ba6b-02eee619baf9" onVerify={this.onVerifyCaptcha} />
+                                <HCaptcha sitekey="aca48aca-c9cd-472d-ba6b-02eee619baf9" onVerify={this.onVerifyCaptcha} size="compact" />
                             </div>
                             <input type="submit" value="Register" />
                         </div>
