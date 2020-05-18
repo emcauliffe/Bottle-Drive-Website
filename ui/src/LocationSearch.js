@@ -25,7 +25,7 @@ export default class LocationSearch extends React.Component {
                     <h1>Bottle drives near you:</h1>
                 </header>
                 <div style={{ pointerEvents: "none" }} className="alert card" hidden={this.state.query.postal === 'false'}>
-                    <p><b>Note:</b> search by postal address is less accurate. Drives listed here may not be in your region.</p>
+                    <p><b>Note:</b> Searching by postal code is less accurate. Drives listed here may not be available in your region.</p>
                 </div>
                 <DriveCards drivesArray={this.state.response} />
             </div>
