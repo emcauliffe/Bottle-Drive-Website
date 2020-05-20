@@ -10,8 +10,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@urbica/react-map-gl": "^1.13.1",
     "@urbica/react-map-gl-draw": "^0.3.2",
-    "mapbox-gl": "^1.10.0",
-    "mapbox-gl-draw": "^0.16.0",
+    "mapbox-gl": "^1.10.1",
     "nominatim-browser": "^2.0.2",
     "oleg97-react-geolookup": "^1.1.0",
     "pigeon-maps": "^0.15.0",
@@ -21,8 +20,6 @@
     "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-map-gl": "^5.2.5",
-    "react-map-gl-draw": "^0.18.2",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "robust-point-in-polygon": "^1.0.3"
