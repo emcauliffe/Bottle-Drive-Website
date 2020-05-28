@@ -12,7 +12,7 @@ export default class LocationSearch extends React.Component {
     }
 
     componentDidMount() {
-        fetch(`/api/search?lat=${this.state.query.lat}&long=${this.state.query.long}`)
+        fetch(`/api/search${this.props.location.search}`)
             .then(result => result.json())
             .then(response => this.setState({ response: response }))
             .catch(error => console.log(error))

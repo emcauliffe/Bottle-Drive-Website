@@ -212,7 +212,18 @@ class DownloadAddressesApi(Resource):
 class SearchForDrivesApi(Resource):
     def get(self):
         try:
-            loc = [float(request.args.get("long")) , float(request.args.get("lat"))]
+            loc = None
+            if request.args.get("postal") == "true":
+                polyResult = request.args.get("poly").split(",")
+                loc = {
+                    "type":"Polygon",
+                    "coordinates": [[]],
+                }
+                for i in range(0,len(polyResult)-1,2):
+                    loc["coordinates"][0].append([float(polyResult[i+1]),float(polyResult[i])])
+                loc["coordinates"][0].append(loc["coordinates"][0][0])
+            else:
+                loc = [float(request.args.get("long")) , float(request.args.get("lat"))]
             drives = User.objects(geo_region__geo_intersects=loc, drives__not__size=0)
             driveList = []
             for i in drives or [None]:

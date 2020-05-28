@@ -55,14 +55,16 @@
             <p>Find bottle drives nearby:</p>
             <div class="w3-container w3-margin-bottom w3-bar">
                 <button id="locSearch" onClick="locationSearch()" class="w3-button w3-light-grey w3-bar-item w3-mobile">
-                    <i class="fa fa-location-arrow"></i> Search by location (most&nbspaccurate)
+                    <i class="fa fa-location-arrow"></i> Search by location (fast&nbsp&&nbspaccurate)
                 </button>
             </div>
             <br />
             <div class="w3-container w3-margin-top w3-bar">
                 <input id="postalCode" class="w3-input w3-border w3-round-large w3-bar-item w3-mobile"
-                    style="font-size: 100%;" type="text" placeholder="K1A 0A9">
-                <button onClick="postalSearch()" class="w3-button w3-light-grey w3-bar-item w3-mobile">
+                    style="font-size: 100%;" type="text" placeholder="K1A 0A9"
+                    pattern="^([ABCEGHJ-NPRSTVXY]|[abceghj-nprstvxy])[0-9]([ABCEGHJ-NPRSTV-Z]|[abceghj-nprstv-z]) ?[0-9]([ABCEGHJ-NPRSTV-Z]|[abceghj-nprstv-z])[0-9]$">
+                <button onClick="postalSearch()" class="w3-button w3-light-grey w3-bar-item w3-mobile"
+                    id="postalButton">
                     Search by postal code
                 </button>
             </div>
@@ -142,27 +144,24 @@
 <script>
     function locationSearch() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(result => searchDatabase([result.coords.longitude, result.coords.latitude]), (error) => document.getElementById("locSearch").disabled = true)
+            navigator.geolocation.getCurrentPosition(result => window.location.assign(`/search?lat=${result.coords.latitude}&long=${result.coords.longitude}&postal=false`), (error) => document.getElementById("locSearch").disabled = true)
         }
     }
 
     function postalSearch() {
-        const postalCode = document.getElementById("postalCode").value
-
-        fetch("https://geogratis.gc.ca/services/geolocation/en/locate?q=" + postalCode.slice(0, 3))
-            .then(result => result.json())
-            .then(value => searchDatabase(value[0].geometry.coordinates, true))
-            .catch(error => console.log(error))
-    }
-
-    function searchDatabase(longLatArray, postal) {
-        postal = postal || false
-        const query = {
-            "lat": longLatArray[1],
-            "long": longLatArray[0],
-            "postal": postal
+        const postalCode = document.getElementById("postalCode")
+        if (postalCode.checkValidity() && postalCode.value !== "") {
+            document.getElementById("postalButton").disabled = true
+            document.getElementById("postalButton").style.cursor = "wait"
+            fetch("https://geocoder.ca/?json=1&getpolygon=1&postal=" + postalCode.value.replace(' ',''))
+                .then(result => result.json())
+                .then(value => {
+                    document.getElementById("postalButton").disabled = false
+                    document.getElementById("postalButton").style.cursor = "auto"
+                    window.location.assign(`/search?poly=${value.boundary}&postal=true`)
+                })
+                .catch(error => console.log(error))
         }
-        window.location.assign(`/search?lat=${query.lat}&long=${query.long}&postal=${postal}`)
     }
 </script>
 
