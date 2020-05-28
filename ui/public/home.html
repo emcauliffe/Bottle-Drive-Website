@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html>
-<title>Bottles Against COVID-19</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-    body,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        font-family: "Montserrat", sans-serif
-    }
 
-    .w3-row-padding img {
-        margin-bottom: 12px
-    }
+<head>
+    <title>Bottles Against COVID-19</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Montserrat", sans-serif
+        }
 
-    .bgimg {
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-image: url('https://github.com/emcauliffe/Bottle-Drive-Website/raw/master/images/home-img.png');
-        min-height: 100%;
-    }
-</style>
+        .w3-row-padding img {
+            margin-bottom: 12px
+        }
+
+        .bgimg {
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-image: url('https://github.com/emcauliffe/Bottle-Drive-Website/raw/master/images/home-img.png');
+            min-height: 100%;
+        }
+    </style>
+    <script>window.sa_event = window.sa_event || function () { a = [].slice.call(arguments); sa_event.q ? sa_event.q.push(a) : sa_event.q = [a] };</script>
+</head>
 
 <body>
 
@@ -144,6 +148,7 @@
 <script>
     function locationSearch() {
         if (navigator.geolocation) {
+            sa_event("geo_search")
             navigator.geolocation.getCurrentPosition(result => window.location.assign(`/search?lat=${result.coords.latitude}&long=${result.coords.longitude}&postal=false`), (error) => document.getElementById("locSearch").disabled = true)
         }
     }
@@ -151,9 +156,10 @@
     function postalSearch() {
         const postalCode = document.getElementById("postalCode")
         if (postalCode.checkValidity() && postalCode.value !== "") {
+            sa_event("postal_search")
             document.getElementById("postalButton").disabled = true
             document.getElementById("postalButton").style.cursor = "wait"
-            fetch("https://geocoder.ca/?json=1&getpolygon=1&postal=" + postalCode.value.replace(' ',''))
+            fetch("https://geocoder.ca/?json=1&getpolygon=1&postal=" + postalCode.value.replace(' ', ''))
                 .then(result => result.json())
                 .then(value => {
                     document.getElementById("postalButton").disabled = false
