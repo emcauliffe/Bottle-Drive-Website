@@ -35,6 +35,7 @@ export default class PickupRegister extends React.Component {
             "disabled": true,
             "promptSearch": false,
             "isIn": 2,
+            "zoom": 1,
         }
         this.handleInputChange = this.handleInputChange.bind(this)
         this.addressSelected = this.addressSelected.bind(this)
@@ -43,6 +44,9 @@ export default class PickupRegister extends React.Component {
         this.onVerifyCaptcha = this.onVerifyCaptcha.bind(this)
         this.validateInput = this.validateInput.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
+        this.calcZoom = this.calcZoom.bind(this)
+
+        this.map = React.createRef()
     }
 
     handleInputChange(event) {
@@ -176,6 +180,39 @@ export default class PickupRegister extends React.Component {
         event.preventDefault();
     }
 
+    calcZoom(coordArray, height, width) {
+        let swBound = [Infinity, Infinity]
+        let neBound = [-Infinity, -Infinity]
+
+        for (let i = 0; i < coordArray.length; i++) {
+            swBound[0] = Math.min(coordArray[i][1], swBound[0])
+            swBound[1] = Math.min(coordArray[i][0], swBound[1])
+            neBound[0] = Math.max(coordArray[i][1], neBound[0])
+            neBound[1] = Math.max(coordArray[i][0], neBound[1])
+        }
+
+        function latRad(lat) {
+            var sin = Math.sin(lat * Math.PI / 180)
+            var radX2 = Math.log((1 + sin) / (1 - sin)) / 2
+            return Math.max(Math.min(radX2, Math.PI), - Math.PI) / 2
+        }
+
+        function zoom(mapPx, worldPx, fraction) {
+            return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
+        }
+
+        var latFraction = (latRad(neBound[0]) - latRad(swBound[0])) / Math.PI
+
+
+        var lngDiff = neBound[1] - swBound[1]
+        var lngFraction = ((lngDiff < 0) ? (lngDiff + 360) : lngDiff) / 360
+
+        var latZoom = zoom(height, 256, latFraction)
+        var lngZoom = zoom(width, 256, lngFraction)
+
+        return Math.min(latZoom, lngZoom, 18)
+    }
+
     componentDidMount() {
         fetch("/api/" + this.state.link_code)
             .then(response => {
@@ -187,7 +224,7 @@ export default class PickupRegister extends React.Component {
             })
             .then(result => {
                 let center = polylabel(result.geo_region.coordinates)
-                this.setState({ center: [center[1], center[0]], ...result })
+                this.setState({ center: [center[1], center[0]], ...result, zoom: this.calcZoom(result.geo_region.coordinates[0], 400, this.map.current.offsetWidth) })
             })
             .catch(error => console.log('error', error));
     }
@@ -199,12 +236,12 @@ export default class PickupRegister extends React.Component {
                     <h1>{this.state.drive_name}'s Bottle Drive</h1>
                 </header>
                 <h2 className="pickup-signup-subheader" hidden={this.state.header === ""}>{this.state.header}</h2>
-                <div className="Pickup-Region-Map">
+                <div className="Pickup-Region-Map" ref={this.map}>
                     <p>Pickup Region:</p>
                     <Map provider={mapTilerProvider}
                         dprs={[1, 2]}
                         center={this.state.center}
-                        zoom={12}
+                        zoom={this.state.zoom}
                         height={400}
                         metaWheelZoom={true}
                         twoFingerDrag={true}
