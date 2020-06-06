@@ -246,7 +246,7 @@ export default class PickupRegister extends React.Component {
                         metaWheelZoom={true}
                         twoFingerDrag={true}
                     >
-                        <Marker anchor={this.state.address_latLong} />
+                        {this.state.address !== "" && <Marker anchor={this.state.address_latLong} />}
                         <Polygon coordsArray={this.state.geo_region.coordinates[0]} colour="var(--colour-2)" />
                     </Map>
                 </div>
