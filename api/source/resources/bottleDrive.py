@@ -182,7 +182,7 @@ class DownloadAddressesApi(Resource):
                     w = csv.writer(data)
 
                     # write header
-                    w.writerow(('Name', 'Address', "e-mail", "boxes", "message"))
+                    w.writerow(("Name", "Address", "Neighbourhood", "e-mail", "boxes", "message"))
                     yield data.getvalue()
                     data.seek(0)
                     data.truncate(0)
