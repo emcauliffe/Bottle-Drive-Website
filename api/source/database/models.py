@@ -7,6 +7,7 @@ import enchant
 class PickupAddresses(db.EmbeddedDocument):
     name = db.StringField(required=True)
     homeAddress = db.StringField(required=True)
+    neighbourhood = db.StringField()
     email = db.EmailField(required=True)
     crates = db.IntField(required=True, min_val=1)
     message = db.StringField()

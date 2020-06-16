@@ -27,6 +27,7 @@ export default class PickupRegister extends React.Component {
             "email": "",
             "address": "",
             "address_latLong": [0, 0],
+            "neighbourhood":"",
             "twelvePack": 0,
             "sixPack": 0,
             "beerBottles": 0,
@@ -63,7 +64,8 @@ export default class PickupRegister extends React.Component {
             this.setState({ promptSearch: false })
             const address = result.raw.address.house_number + " " + result.raw.address.road + ", " + result.raw.address.city + ", " + result.raw.address.state
             const latLong = [parseFloat(result.raw.lat), parseFloat(result.raw.lon)]
-            this.setState({ address: address, address_latLong: latLong })
+            const neighbourhood = result.raw.address.neighbourhood
+            this.setState({ address: address, address_latLong: latLong, neighbourhood: neighbourhood})
             const isIn = PointIn(this.state.geo_region.coordinates[0], [latLong[1], latLong[0]])//the geoJSON is stored as lonLat, so reverse latLong order (non-destructive)
             if (isIn > 0) {
                 this.setState({ disabled: true })
@@ -138,6 +140,7 @@ export default class PickupRegister extends React.Component {
                 "details": {
                     "name": this.state.name,
                     "homeAddress": this.state.address,
+                    "neighbourhood": this.state.neighbourhood,
                     "email": this.state.email,
                     "crates": parseInt(this.state.twelvePack) + parseInt(this.state.sixPack) + parseInt(this.state.beerBottles),
                     "message": this.state.message,

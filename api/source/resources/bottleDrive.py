@@ -191,6 +191,7 @@ class DownloadAddressesApi(Resource):
                         w.writerow((
                             item.name,
                             item.homeAddress,
+                            item.neighbourhood,
                             item.email,
                             item.crates,
                             item.message
